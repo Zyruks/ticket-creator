@@ -2,7 +2,7 @@ import { BookOpen, FolderTree, Menu, Settings, Ticket, X } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@common';
 
 const navItems = [
 	{ to: '/', icon: Ticket, label: 'Create' },

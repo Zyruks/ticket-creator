@@ -1,6 +1,6 @@
 import { BookOpen, FolderTree, Settings, Ticket } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { cn } from '@common';
 
 const navItems = [
 	{ to: '/', icon: Ticket, label: 'Create Ticket' },
