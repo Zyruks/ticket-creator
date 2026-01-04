@@ -1,5 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from 'react';
 import { useEventCallback } from './useEventCallback';
 import { useEventListener } from './useEventListener';
 
@@ -9,11 +8,53 @@ declare global {
 	}
 }
 
-type UseLocalStorageOptions<T> = {
+interface UseLocalStorageOptions<T> {
+	/**
+	 * The key to use in localStorage.
+	 */
+	key: string;
+
+	/**
+	 * The initial value to use if no value is found in localStorage.
+	 * Can be a static value or a function that returns the value.
+	 */
+	initialValue: T | (() => T);
+
+	/**
+	 * Function to serialize the value before storing.
+	 * @default JSON.stringify
+	 */
 	serializer?: (value: T) => string;
+
+	/**
+	 * Function to deserialize the value from storage.
+	 * @default JSON.parse
+	 */
 	deserializer?: (value: string) => T;
+
+	/**
+	 * Whether to initialize the state with the value from storage.
+	 * @default true
+	 */
 	initializeWithValue?: boolean;
-};
+}
+
+interface UseLocalStorageReturn<T> {
+	/**
+	 * The current value.
+	 */
+	value: T;
+
+	/**
+	 * Function to update the value.
+	 */
+	setValue: Dispatch<SetStateAction<T>>;
+
+	/**
+	 * Function to remove the value from localStorage.
+	 */
+	remove: () => void;
+}
 
 const IS_SERVER = typeof window === 'undefined';
 
@@ -21,32 +62,32 @@ const IS_SERVER = typeof window === 'undefined';
  * Custom hook that uses the localStorage API to persist state across page reloads.
  * Based on usehooks-ts implementation.
  *
- * @param key - The localStorage key
- * @param initialValue - Initial value (can be a function for lazy initialization)
- * @param options - Serialization options
- * @returns [storedValue, setValue, removeValue]
+ * @param options - Configuration options.
+ * @returns Object containing value, setValue, and remove.
  */
-export function useLocalStorage<T>(
-	key: string,
-	initialValue: T | (() => T),
-	options: UseLocalStorageOptions<T> = {}
-): [T, Dispatch<SetStateAction<T>>, () => void] {
-	const { initializeWithValue = true } = options;
+export function useLocalStorage<T>(options: UseLocalStorageOptions<T>): UseLocalStorageReturn<T> {
+	const {
+		key,
+		initialValue,
+		initializeWithValue = true,
+		serializer: customSerializer,
+		deserializer: customDeserializer,
+	} = options;
 
 	const serializer = useCallback<(value: T) => string>(
 		(value) => {
-			if (options.serializer) {
-				return options.serializer(value);
+			if (customSerializer) {
+				return customSerializer(value);
 			}
 			return JSON.stringify(value);
 		},
-		[options]
+		[customSerializer]
 	);
 
 	const deserializer = useCallback<(value: string) => T>(
 		(value) => {
-			if (options.deserializer) {
-				return options.deserializer(value);
+			if (customDeserializer) {
+				return customDeserializer(value);
 			}
 
 			// Support 'undefined' as a value
@@ -66,7 +107,7 @@ export function useLocalStorage<T>(
 
 			return parsed as T;
 		},
-		[options, initialValue]
+		[customDeserializer, initialValue]
 	);
 
 	const readValue = useCallback((): T => {
@@ -110,7 +151,7 @@ export function useLocalStorage<T>(
 		}
 	});
 
-	const removeValue = useEventCallback(() => {
+	const remove = useEventCallback(() => {
 		if (IS_SERVER) {
 			console.warn(
 				`Tried removing localStorage key "${key}" even though environment is not a client`
@@ -138,8 +179,9 @@ export function useLocalStorage<T>(
 		[key, readValue]
 	);
 
-	useEventListener('storage', handleStorageChange);
-	useEventListener('local-storage', handleStorageChange);
+	// Updated to use new useEventListener signature (options object)
+	useEventListener({ eventName: 'storage', handler: handleStorageChange });
+	useEventListener({ eventName: 'local-storage', handler: handleStorageChange });
 
-	return [storedValue, setValue, removeValue];
+	return { value: storedValue, setValue, remove };
 }

@@ -3,6 +3,9 @@ import { useCallback, useRef } from 'react';
 /**
  * A hook that returns a stable callback reference that always points to the latest function.
  * Useful for callbacks that need to be passed as dependencies but shouldn't trigger re-renders.
+ *
+ * @param callback - The callback function to stabilize.
+ * @returns A stable reference to the callback.
  */
 export function useEventCallback<T extends (...args: unknown[]) => unknown>(callback: T): T {
 	const callbackRef = useRef(callback);

@@ -1,4 +1,4 @@
-export { ContextPage } from './ContextPage';
-export { HomePage } from './HomePage';
-export { SettingsPage } from './SettingsPage';
-export { TrainingPage } from './TrainingPage';
+export { ContextPage } from './Context/ContextPage';
+export { HomePage } from './Home/HomePage';
+export { SettingsPage } from './Settings/SettingsPage';
+export { TrainingPage } from './Training/TrainingPage';

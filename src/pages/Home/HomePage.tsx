@@ -1,13 +1,37 @@
-import { type ImageAttachment, buildMessageContent, buildSystemPrompt, buildUserPrompt, createImageAttachment, streamChatCompletion } from '@domain/openai';
-import { createTicket, useRepositoryStore, useSettingsStore, useTicketStore, useTrainingStore } from '@domain/stores';
+import { cn } from '@common';
+import {
+	buildMessageContent,
+	buildSystemPrompt,
+	buildUserPrompt,
+	createImageAttachment,
+	type ImageAttachment,
+	streamChatCompletion,
+} from '@domain/openai';
+import {
+	createTicket,
+	useRepositoryStore,
+	useSettingsStore,
+	useTicketStore,
+	useTrainingStore,
+} from '@domain/stores';
 import { DEFAULT_TICKET_TEMPLATE } from '@domain/ticket';
-import { AlertCircle, Check, Copy, Edit3, ImagePlus, Loader2, RefreshCw, Send, Sparkles, Ticket, X } from 'lucide-react';
+import {
+	AlertCircle,
+	Check,
+	Copy,
+	Edit3,
+	ImagePlus,
+	Loader2,
+	RefreshCw,
+	Send,
+	Sparkles,
+	Ticket,
+	X,
+} from 'lucide-react';
 import { type KeyboardEvent, useCallback, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
-
-import { cn } from '@common';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -412,7 +436,7 @@ export function HomePage() {
 							value={request}
 							onChange={(e) => setRequest(e.target.value)}
 							onKeyDown={handleKeyDown}
-							placeholder="e.g., Update the color system for the print.lol folder to use the new Tailwind theme tokens..."
+							placeholder="e.g., Update the color system to use the new Tailwind theme tokens..."
 							className={classes.textInput}
 							disabled={isGenerating}
 						/>
