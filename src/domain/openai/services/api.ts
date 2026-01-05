@@ -1,17 +1,5 @@
-/**
- * OpenAI Service - Handles all OpenAI API interactions
- */
-
 import OpenAI from 'openai';
-import type {
-	ChatMessage,
-	ImageAttachment,
-	ImageContent,
-	MessageContent,
-	OpenAIConfig,
-	OpenAIResponse,
-	TextContent,
-} from './openai.types';
+import type { ChatMessage, OpenAIConfig, OpenAIResponse, TextContent } from '../types';
 
 type ChatCompletionMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 
@@ -21,7 +9,7 @@ type ChatCompletionMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 export function createOpenAIClient(apiKey: string): OpenAI {
 	return new OpenAI({
 		apiKey,
-		dangerouslyAllowBrowser: true, // Required for browser-side usage
+		dangerouslyAllowBrowser: true,
 	});
 }
 
@@ -36,29 +24,6 @@ export async function validateApiKey(apiKey: string): Promise<boolean> {
 	} catch {
 		return false;
 	}
-}
-
-/**
- * Build message content with optional images
- */
-export function buildMessageContent(text: string, images?: ImageAttachment[]): MessageContent {
-	if (!images || images.length === 0) {
-		return text;
-	}
-
-	const content: (TextContent | ImageContent)[] = [{ type: 'text', text }];
-
-	for (const image of images) {
-		content.push({
-			type: 'image_url',
-			image_url: {
-				url: image.dataUrl,
-				detail: 'auto',
-			},
-		});
-	}
-
-	return content;
 }
 
 /**
@@ -108,7 +73,7 @@ function toOpenAIMessage(message: ChatMessage): ChatCompletionMessage {
  */
 export async function sendChatCompletion(
 	config: OpenAIConfig,
-	messages: ChatMessage[]
+	messages: ChatMessage[],
 ): Promise<OpenAIResponse> {
 	const client = createOpenAIClient(config.apiKey);
 
@@ -138,7 +103,7 @@ export async function sendChatCompletion(
  */
 export async function* streamChatCompletion(
 	config: OpenAIConfig,
-	messages: ChatMessage[]
+	messages: ChatMessage[],
 ): AsyncGenerator<string, void, unknown> {
 	const client = createOpenAIClient(config.apiKey);
 
@@ -156,37 +121,4 @@ export async function* streamChatCompletion(
 			yield content;
 		}
 	}
-}
-
-/**
- * Estimate token count for a string (rough approximation)
- * Rule of thumb: ~4 characters per token for English text
- */
-export function estimateTokenCount(text: string): number {
-	return Math.ceil(text.length / 4);
-}
-
-/**
- * Read a file as a base64 data URL
- */
-export function readFileAsDataUrl(file: File): Promise<string> {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = () => resolve(reader.result as string);
-		reader.onerror = () => reject(new Error('Failed to read file'));
-		reader.readAsDataURL(file);
-	});
-}
-
-/**
- * Create an image attachment from a file
- */
-export async function createImageAttachment(file: File): Promise<ImageAttachment> {
-	const dataUrl = await readFileAsDataUrl(file);
-	return {
-		id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-		file,
-		dataUrl,
-		name: file.name,
-	};
 }

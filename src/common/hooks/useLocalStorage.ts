@@ -81,7 +81,7 @@ export function useLocalStorage<T>(options: UseLocalStorageOptions<T>): UseLocal
 			}
 			return JSON.stringify(value);
 		},
-		[customSerializer]
+		[customSerializer],
 	);
 
 	const deserializer = useCallback<(value: string) => T>(
@@ -107,7 +107,7 @@ export function useLocalStorage<T>(options: UseLocalStorageOptions<T>): UseLocal
 
 			return parsed as T;
 		},
-		[customDeserializer, initialValue]
+		[customDeserializer, initialValue],
 	);
 
 	const readValue = useCallback((): T => {
@@ -135,9 +135,7 @@ export function useLocalStorage<T>(options: UseLocalStorageOptions<T>): UseLocal
 
 	const setValue: Dispatch<SetStateAction<T>> = useEventCallback((value) => {
 		if (IS_SERVER) {
-			console.warn(
-				`Tried setting localStorage key "${key}" even though environment is not a client`
-			);
+			console.warn(`Tried setting localStorage key "${key}" even though environment is not a client`);
 			return;
 		}
 
@@ -153,9 +151,7 @@ export function useLocalStorage<T>(options: UseLocalStorageOptions<T>): UseLocal
 
 	const remove = useEventCallback(() => {
 		if (IS_SERVER) {
-			console.warn(
-				`Tried removing localStorage key "${key}" even though environment is not a client`
-			);
+			console.warn(`Tried removing localStorage key "${key}" even though environment is not a client`);
 			return;
 		}
 
@@ -176,7 +172,7 @@ export function useLocalStorage<T>(options: UseLocalStorageOptions<T>): UseLocal
 			}
 			setStoredValue(readValue());
 		},
-		[key, readValue]
+		[key, readValue],
 	);
 
 	// Updated to use new useEventListener signature (options object)

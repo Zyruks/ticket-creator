@@ -1,9 +1,6 @@
-/**
- * System prompts and templates for OpenAI ticket generation
- */
-
-import type { TicketTemplate } from '../ticket/ticket.types';
-import type { TrainingExample } from '../training/training.types';
+import type { TicketTemplate } from '../../ticket';
+import type { TrainingExample } from '../../training';
+import type { ImageAttachment, ImageContent, MessageContent, TextContent } from '../types';
 
 /**
  * Build the system prompt for ticket generation
@@ -11,7 +8,7 @@ import type { TrainingExample } from '../training/training.types';
 export function buildSystemPrompt(
 	template: TicketTemplate,
 	repoContext: string | null,
-	examples: TrainingExample[]
+	examples: TrainingExample[],
 ): string {
 	let prompt = `You are an expert technical writer who creates clear, actionable tickets for software development teams. You specialize in frontend development tickets.
 
@@ -83,4 +80,60 @@ export function buildUserPrompt(request: string): string {
 ${request}
 
 Generate a complete, well-structured ticket following the template provided.`;
+}
+
+/**
+ * Build message content with optional images
+ */
+export function buildMessageContent(text: string, images?: ImageAttachment[]): MessageContent {
+	if (!images || images.length === 0) {
+		return text;
+	}
+
+	const content: (TextContent | ImageContent)[] = [{ type: 'text', text }];
+
+	for (const image of images) {
+		content.push({
+			type: 'image_url',
+			image_url: {
+				url: image.dataUrl,
+				detail: 'auto',
+			},
+		});
+	}
+
+	return content;
+}
+
+/**
+ * Estimate token count for a string (rough approximation)
+ * Rule of thumb: ~4 characters per token for English text
+ */
+export function estimateTokenCount(text: string): number {
+	return Math.ceil(text.length / 4);
+}
+
+/**
+ * Read a file as a base64 data URL
+ */
+export function readFileAsDataUrl(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(reader.result as string);
+		reader.onerror = () => reject(new Error('Failed to read file'));
+		reader.readAsDataURL(file);
+	});
+}
+
+/**
+ * Create an image attachment from a file
+ */
+export async function createImageAttachment(file: File): Promise<ImageAttachment> {
+	const dataUrl = await readFileAsDataUrl(file);
+	return {
+		id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+		file,
+		dataUrl,
+		name: file.name,
+	};
 }
