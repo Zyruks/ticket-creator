@@ -1,16 +1,30 @@
+import type { TrainingExample } from '@domain';
 import { Download, Plus, Trash2, Upload } from 'lucide-react';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-
-import { type TrainingExample } from '@domain/training';
 import { Button } from '@/components/ui/button';
 
 interface TrainingActionsProps {
+	/**
+	 * Array of training examples.
+	 */
 	examples: TrainingExample[];
-	onImport: (examples: TrainingExample[]) => void;
-	onExport: () => void;
-	onClear: () => void;
+	/**
+	 * Callback when add example button is clicked.
+	 */
 	onAddOpen: () => void;
+	/**
+	 * Callback to clear all training examples.
+	 */
+	onClear: () => void;
+	/**
+	 * Callback to export training examples.
+	 */
+	onExport: () => void;
+	/**
+	 * Callback to import training examples.
+	 */
+	onImport: (examples: TrainingExample[]) => void;
 }
 
 export const TrainingActions = ({
@@ -44,28 +58,40 @@ export const TrainingActions = ({
 			reader.readAsText(file);
 			event.target.value = '';
 		},
-		[onImport]
+		[onImport],
 	);
 
 	return (
-		<div className="flex flex-wrap gap-2 mb-6">
+		<div className="mb-6 flex flex-wrap gap-2">
 			<Button onClick={onAddOpen}>
-				<Plus className="h-4 w-4 mr-2" />
+				<Plus className="mr-2 h-4 w-4" />
 				Add Example
 			</Button>
 
 			<label>
-				<Button variant="outline" asChild>
+				<Button
+					variant="outline"
+					asChild
+				>
 					<span>
-						<Upload className="h-4 w-4 mr-2" />
+						<Upload className="mr-2 h-4 w-4" />
 						Import JSON
-						<input type="file" accept=".json" onChange={handleImportFile} className="sr-only" />
+						<input
+							type="file"
+							accept=".json"
+							onChange={handleImportFile}
+							className="sr-only"
+						/>
 					</span>
 				</Button>
 			</label>
 
-			<Button variant="outline" onClick={onExport} disabled={!hasExamples}>
-				<Download className="h-4 w-4 mr-2" />
+			<Button
+				variant="outline"
+				onClick={onExport}
+				disabled={!hasExamples}
+			>
+				<Download className="mr-2 h-4 w-4" />
 				Export JSON
 			</Button>
 
@@ -75,7 +101,7 @@ export const TrainingActions = ({
 				onClick={onClear}
 				disabled={!hasExamples}
 			>
-				<Trash2 className="h-4 w-4 mr-2" />
+				<Trash2 className="mr-2 h-4 w-4" />
 				Clear All
 			</Button>
 		</div>

@@ -1,12 +1,7 @@
-import { useRepositoryStore, useSettingsStore, useTrainingStore } from '@domain/stores';
-import { cn } from '@common';
-import { Badge } from '@/components/ui/badge';
+import { useRepositoryStore, useSettingsStore, useTrainingStore } from '@domain';
+import { Badge } from '@/components/ui';
 
 export const StatusBadges = () => {
-	const classes = {
-		badges: cn('flex flex-wrap gap-2 mb-6'),
-	};
-
 	const { isConfigured } = useSettingsStore();
 	const { examples } = useTrainingStore();
 	const { context } = useRepositoryStore();
@@ -21,10 +16,10 @@ export const StatusBadges = () => {
 	const contextVariant = context ? 'default' : 'secondary';
 
 	return (
-		<div className={classes.badges}>
+		<div className="mb-6 flex flex-wrap gap-2">
 			<Badge variant={apiStatusVariant}>{apiStatusLabel}</Badge>
 			<Badge variant={trainingVariant}>{ticketExampleLabel}</Badge>
 			<Badge variant={contextVariant}>{contextLabel}</Badge>
 		</div>
 	);
-}
+};

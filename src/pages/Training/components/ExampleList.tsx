@@ -1,18 +1,27 @@
-import { Edit, Trash2 } from 'lucide-react';
 import { cn } from '@common';
-import { type TrainingExample } from '@domain/training';
+import type { TrainingExample } from '@domain';
+import { Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ExampleListProps {
+	/**
+	 * Array of training examples to display.
+	 */
 	examples: TrainingExample[];
-	onEdit: (example: TrainingExample) => void;
+	/**
+	 * Callback when delete button is clicked.
+	 */
 	onDelete: (id: string) => void;
+	/**
+	 * Callback when edit button is clicked.
+	 */
+	onEdit: (example: TrainingExample) => void;
 }
 
 export const ExampleList = ({ examples, onEdit, onDelete }: ExampleListProps) => {
-	// 1. CLASSES OBJECT
+	// CLASSES OBJECT
 	const classes = {
 		listContainer: cn('space-y-4'),
 		cardHeader: cn('pb-3'),
@@ -28,7 +37,7 @@ export const ExampleList = ({ examples, onEdit, onDelete }: ExampleListProps) =>
 					<CardHeader className={classes.cardHeader}>
 						<div className={classes.cardHeaderContent}>
 							<div className="flex-1">
-								<CardTitle className="text-base font-medium">
+								<CardTitle className="font-medium text-base">
 									{example.input.length > 100 ? `${example.input.slice(0, 100)}...` : example.input}
 								</CardTitle>
 								<CardDescription className="mt-1">
@@ -36,10 +45,18 @@ export const ExampleList = ({ examples, onEdit, onDelete }: ExampleListProps) =>
 								</CardDescription>
 							</div>
 							<div className={classes.cardActions}>
-								<Button variant="ghost" size="icon" onClick={() => onEdit(example)}>
+								<Button
+									variant="ghost"
+									size="icon"
+									onClick={() => onEdit(example)}
+								>
 									<Edit className="h-4 w-4" />
 								</Button>
-								<Button variant="ghost" size="icon" onClick={() => onDelete(example.id)}>
+								<Button
+									variant="ghost"
+									size="icon"
+									onClick={() => onDelete(example.id)}
+								>
 									<Trash2 className="h-4 w-4 text-destructive" />
 								</Button>
 							</div>
@@ -47,7 +64,7 @@ export const ExampleList = ({ examples, onEdit, onDelete }: ExampleListProps) =>
 					</CardHeader>
 					<CardContent>
 						<ScrollArea className={classes.scrollArea}>
-							<pre className="text-xs text-muted-foreground whitespace-pre-wrap font-mono bg-muted p-3 rounded-md">
+							<pre className="whitespace-pre-wrap rounded-md bg-muted p-3 font-mono text-muted-foreground text-xs">
 								{example.output}
 							</pre>
 						</ScrollArea>

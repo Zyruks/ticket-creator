@@ -1,60 +1,67 @@
-import { type RepositoryNode } from '@domain/repository';
+import { cn } from '@common';
+import type { RepositoryNode } from '@domain';
 import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { cn } from '@common';
 import { Badge } from '@/components/ui/badge';
 
 interface TreeNodeProps {
-	node: RepositoryNode;
+	/**
+	 * Nesting level of the node.
+	 */
 	level: number;
+	/**
+	 * Repository node data.
+	 */
+	node: RepositoryNode;
 }
 
 export const TreeNode = ({ node, level }: TreeNodeProps) => {
-	// 1. CLASSES OBJECT
 	const classes = {
 		row: cn(
-			'flex items-center gap-1 py-0.5 px-2 hover:bg-muted/50 rounded cursor-pointer',
-			'focus:outline-none focus:ring-2 focus:ring-primary/20'
+			'flex cursor-pointer items-center gap-1 rounded px-2 py-0.5 hover:bg-muted/50',
+			'focus:outline-none focus:ring-2 focus:ring-primary/20',
 		),
 		childrenContainer: cn(''),
 	};
 
-	// 2. HOOKS
+	const sortedChildren = node.children
+		? [...node.children].sort((childNodeA, childNodeB) => {
+				if (childNodeA.type === childNodeB.type) return childNodeA.name.localeCompare(childNodeB.name);
+
+				return childNodeA.type === 'directory' ? -1 : 1;
+			})
+		: [];
+
 	const [isExpanded, setIsExpanded] = useState(level < 2);
 
-	// 3. DERIVED STATE
 	const isDirectory = node.type === 'directory';
 	const hasChildren = isDirectory && node.children && node.children.length > 0;
 	const paddingLeft = `${level * 16 + 8}px`;
 
-	// 4. CALLBACKS
 	const handleToggle = useCallback(() => {
-		if (hasChildren) {
-			setIsExpanded((prev) => !prev);
-		}
+		if (hasChildren) setIsExpanded((prev) => !prev);
 	}, [hasChildren]);
 
 	const handleKeyDown = useCallback(
-		(e: React.KeyboardEvent) => {
-			if (hasChildren && (e.key === 'Enter' || e.key === ' ')) {
-				e.preventDefault();
+		(event: React.KeyboardEvent) => {
+			if (hasChildren && (event.key === 'Enter' || event.key === ' ')) {
+				event.preventDefault();
 				handleToggle();
 			}
 		},
-		[hasChildren, handleToggle]
+		[hasChildren, handleToggle],
 	);
 
-	// 5. RENDER HELPERS
 	const renderToggleIcon = () => {
 		if (!hasChildren) return <span className="w-4" />;
-		if (isExpanded) return <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />;
-		return <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />;
+		if (isExpanded) return <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />;
+		return <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />;
 	};
 
 	const renderTypeIcon = () => {
-		if (!isDirectory) return <File className="h-4 w-4 text-muted-foreground shrink-0" />;
-		if (isExpanded) return <FolderOpen className="h-4 w-4 text-amber-500 shrink-0" />;
-		return <Folder className="h-4 w-4 text-amber-500 shrink-0" />;
+		if (!isDirectory) return <File className="h-4 w-4 shrink-0 text-muted-foreground" />;
+		if (isExpanded) return <FolderOpen className="h-4 w-4 shrink-0 text-amber-500" />;
+		return <Folder className="h-4 w-4 shrink-0 text-amber-500" />;
 	};
 
 	return (
@@ -73,7 +80,10 @@ export const TreeNode = ({ node, level }: TreeNodeProps) => {
 				{renderTypeIcon()}
 				<span className={`text-sm ${node.important ? 'font-medium' : ''}`}>{node.name}</span>
 				{node.important && (
-					<Badge variant="outline" className="text-xs ml-2 py-0">
+					<Badge
+						variant="outline"
+						className="ml-2 py-0 text-xs"
+					>
 						key file
 					</Badge>
 				)}
@@ -82,14 +92,13 @@ export const TreeNode = ({ node, level }: TreeNodeProps) => {
 			{/* Children */}
 			{isExpanded && hasChildren && (
 				<div className={classes.childrenContainer}>
-					{node.children
-						?.sort((a, b) => {
-							if (a.type !== b.type) return a.type === 'directory' ? -1 : 1;
-							return a.name.localeCompare(b.name);
-						})
-						.map((child) => (
-							<TreeNode key={child.path} node={child} level={level + 1} />
-						))}
+					{sortedChildren.map((child) => (
+						<TreeNode
+							key={child.path}
+							node={child}
+							level={level + 1}
+						/>
+					))}
 				</div>
 			)}
 		</div>

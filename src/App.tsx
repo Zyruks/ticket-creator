@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { RootLayout } from '@/components/Layout';
 import { Toaster } from '@/components/ui/sonner';
+import { RootLayout } from '@/Layout';
 import { ContextPage, HomePage, SettingsPage, TrainingPage } from '@/pages';
 
 export default function App() {

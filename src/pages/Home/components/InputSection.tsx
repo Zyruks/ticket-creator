@@ -1,20 +1,49 @@
-import { type ImageAttachment } from '@domain/openai';
+import { cn } from '@common';
+import type { ImageAttachment } from '@domain';
 import { ImagePlus, Loader2, Send, Sparkles, X } from 'lucide-react';
 import { type KeyboardEvent, useCallback, useRef, useState } from 'react';
-import { cn } from '@common';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Textarea } from '@/components';
 
 interface InputSectionProps {
-	request: string;
-	setRequest: (value: string) => void;
-	isGenerating: boolean;
-	onGenerate: () => void;
+	/**
+	 * Array of attached images.
+	 */
 	images: ImageAttachment[];
+
+	/**
+	 * Whether ticket generation is in progress.
+	 */
+	isGenerating: boolean;
+
+	/**
+	 * Current request text value.
+	 */
+	request: string;
+
+	/**
+	 * Callback to add images from file list.
+	 */
 	onAddImages: (files: FileList) => Promise<void>;
-	onRemoveImage: (id: string) => void;
+
+	/**
+	 * Callback to clear all images.
+	 */
 	onClearImages: () => void;
+
+	/**
+	 * Callback to generate ticket.
+	 */
+	onGenerate: () => void;
+
+	/**
+	 * Callback to remove a specific image.
+	 */
+	onRemoveImage: (id: string) => void;
+
+	/**
+	 * Callback to set request text.
+	 */
+	setRequest: (value: string) => void;
 }
 
 export const InputSection = ({
@@ -27,64 +56,62 @@ export const InputSection = ({
 	onRemoveImage,
 	onClearImages,
 }: InputSectionProps) => {
-	// 1. CLASSES OBJECT
 	const classes = {
 		container: cn('mb-6'),
-		dragZone: (active: boolean) =>
-			cn(
-				'relative rounded-md group transition-all',
-				active && 'ring-2 ring-primary ring-offset-2 bg-primary/5'
-			),
+		dragZone: (isActive: boolean) =>
+			cn('group relative rounded-md transition-all', {
+				'bg-primary/5 ring-2 ring-primary ring-offset-2': isActive,
+			}),
 		dragOverlay: cn(
-			'absolute inset-0 flex items-center justify-center pointer-events-none',
-			'bg-background/50 backdrop-blur-sm rounded-md border-2 border-dashed border-primary'
+			'pointer-events-none absolute inset-0 flex items-center justify-center',
+			'rounded-md border-2 border-primary border-dashed bg-background/50 backdrop-blur-sm',
 		),
-		dragContent: cn('flex flex-col items-center animate-bounce'),
+		dragContent: cn('flex animate-bounce flex-col items-center'),
 		textInput: cn('min-h-[100px] resize-none pr-8'),
 		imageGrid: cn('flex flex-wrap gap-2'),
-		imageItem: cn('relative group rounded-lg overflow-hidden border bg-muted'),
+		imageItem: cn('group relative overflow-hidden rounded-lg border bg-muted'),
 		imagePreview: cn('h-20 w-20 object-cover'),
 		imageRemove: cn(
-			'absolute top-1 right-1 p-1 rounded-full',
-			'bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity'
+			'absolute top-1 right-1 rounded-full p-1',
+			'bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100',
 		),
-		imageLabel: cn('absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 truncate'),
+		imageLabel: cn('absolute right-0 bottom-0 left-0 truncate bg-black/60 p-1 text-white text-xs'),
 		actions: cn('flex items-center justify-between gap-2'),
-		kdb: cn('px-1 py-0.5 bg-muted rounded text-xs'),
+		kdb: cn('rounded bg-muted px-1 py-0.5 text-xs'),
 	};
 
-	// 2. HOOKS
+	// HOOKS
 	const [isDragging, setIsDragging] = useState(false);
 	const [isLoadingImage, setIsLoadingImage] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	// 3. CALLBACKS
-	const handleDragOver = useCallback((e: React.DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
+	// CALLBACKS
+	const handleDragOver = useCallback((event: React.DragEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
 		setIsDragging(true);
 	}, []);
 
-	const handleDragLeave = useCallback((e: React.DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleDragLeave = useCallback((event: React.DragEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
 		setIsDragging(false);
 	}, []);
 
 	const handleDrop = useCallback(
-		async (e: React.DragEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+		async (event: React.DragEvent) => {
+			event.preventDefault();
+			event.stopPropagation();
 			setIsDragging(false);
 
-			const files = e.dataTransfer.files;
+			const files = event.dataTransfer.files;
 			if (!files || files.length === 0) return;
 
 			setIsLoadingImage(true);
 			await onAddImages(files);
 			setIsLoadingImage(false);
 		},
-		[onAddImages]
+		[onAddImages],
 	);
 
 	const handleFileChange = useCallback(
@@ -100,27 +127,26 @@ export const InputSection = ({
 				fileInputRef.current.value = '';
 			}
 		},
-		[onAddImages]
+		[onAddImages],
 	);
 
 	const handleKeyDown = useCallback(
-		(e: KeyboardEvent<HTMLTextAreaElement>) => {
-			if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-				e.preventDefault();
+		(event: KeyboardEvent<HTMLTextAreaElement>) => {
+			if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
 				onGenerate();
 			}
 		},
-		[onGenerate]
+		[onGenerate],
 	);
 
-	// 4. RENDER HELPERS
 	const renderDragOverlay = () => {
 		if (!isDragging) return null;
 		return (
 			<div className={classes.dragOverlay}>
 				<div className={classes.dragContent}>
-					<ImagePlus className="h-8 w-8 text-primary mb-2" />
-					<p className="text-sm font-medium text-primary">Drop images here</p>
+					<ImagePlus className="mb-2 h-8 w-8 text-primary" />
+					<p className="font-medium text-primary text-sm">Drop images here</p>
 				</div>
 			</div>
 		);
@@ -131,16 +157,27 @@ export const InputSection = ({
 		return (
 			<div className="space-y-2">
 				<div className="flex items-center justify-between">
-					<span className="text-sm font-medium">Attached Images ({images.length})</span>
-					<Button variant="ghost" size="sm" onClick={onClearImages}>
-						<X className="h-3 w-3 mr-1" />
+					<span className="font-medium text-sm">Attached Images ({images.length})</span>
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={onClearImages}
+					>
+						<X className="mr-1 h-3 w-3" />
 						Clear all
 					</Button>
 				</div>
 				<div className={classes.imageGrid}>
 					{images.map((img) => (
-						<div key={img.id} className={classes.imageItem}>
-							<img src={img.dataUrl} alt={img.name} className={classes.imagePreview} />
+						<div
+							key={img.id}
+							className={classes.imageItem}
+						>
+							<img
+								src={img.dataUrl}
+								alt={img.name}
+								className={classes.imagePreview}
+							/>
 							<button
 								type="button"
 								onClick={() => onRemoveImage(img.id)}
@@ -175,26 +212,28 @@ export const InputSection = ({
 					disabled={isGenerating || isLoadingImage}
 				>
 					{isLoadingImage ? (
-						<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 					) : (
-						<ImagePlus className="h-4 w-4 mr-2" />
+						<ImagePlus className="mr-2 h-4 w-4" />
 					)}
 					Add Image
 				</Button>
-				<p className="text-xs text-muted-foreground hidden sm:block">
-					Press <kbd className={classes.kdb}>⌘</kbd> +{' '}
-					<kbd className={classes.kdb}>Enter</kbd> to generate
+				<p className="hidden text-muted-foreground text-xs sm:block">
+					Press <kbd className={classes.kdb}>⌘</kbd> + <kbd className={classes.kdb}>Enter</kbd> to generate
 				</p>
 			</div>
-			<Button onClick={onGenerate} disabled={isGenerating || !request.trim()}>
+			<Button
+				onClick={onGenerate}
+				disabled={isGenerating || !request.trim()}
+			>
 				{isGenerating ? (
 					<>
-						<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 						Generating...
 					</>
 				) : (
 					<>
-						<Send className="h-4 w-4 mr-2" />
+						<Send className="mr-2 h-4 w-4" />
 						Generate Ticket
 					</>
 				)}
@@ -209,33 +248,31 @@ export const InputSection = ({
 					<Sparkles className="h-5 w-5" />
 					What do you need?
 				</CardTitle>
-				<CardDescription>
-					Describe the task, feature, or bug fix you need a ticket for
-				</CardDescription>
+				<CardDescription>Describe the task, feature, or bug fix you need a ticket for</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<div className="space-y-4">
-					{/* biome-ignore lint/a11y/noStaticElementInteractions: drag zone */}
-					<div
+					<section
 						className={classes.dragZone(isDragging)}
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
 						onDrop={handleDrop}
+						aria-label="Drag and drop zone for images"
 					>
 						<Textarea
 							value={request}
-							onChange={(e) => setRequest(e.target.value)}
+							onChange={(event) => setRequest(event.target.value)}
 							onKeyDown={handleKeyDown}
 							placeholder="e.g., Update the color system to use the new Tailwind theme tokens..."
 							className={classes.textInput}
 							disabled={isGenerating}
 						/>
 						{renderDragOverlay()}
-					</div>
+					</section>
 					{renderImages()}
 					{renderActions()}
 				</div>
 			</CardContent>
 		</Card>
 	);
-}
+};

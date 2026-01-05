@@ -1,11 +1,10 @@
-import { type GeneratedTicket } from '@domain/ticket';
+import { cn } from '@common';
+import type { GeneratedTicket } from '@domain';
 import { Check, Copy, Edit3, RefreshCw } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
-
-import { cn } from '@common';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,11 +12,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 
 interface OutputSectionProps {
+	/**
+	 * Current generated ticket.
+	 */
 	currentTicket: GeneratedTicket | null;
-	streamedContent: string;
+
+	/**
+	 * Whether ticket generation is in progress.
+	 */
 	isGenerating: boolean;
-	onUpdateContent: (content: string) => void;
+
+	/**
+	 * Streamed content during generation.
+	 */
+	streamedContent: string;
+
+	/**
+	 * Callback to regenerate ticket.
+	 */
 	onRegenerate: () => void;
+
+	/**
+	 * Callback to update ticket content.
+	 */
+	onUpdateContent: (content: string) => void;
 }
 
 export const OutputSection = ({
@@ -27,21 +45,19 @@ export const OutputSection = ({
 	onUpdateContent,
 	onRegenerate,
 }: OutputSectionProps) => {
-	// 1. CLASSES OBJECT
 	const classes = {
-		preview: cn('prose prose-sm max-w-none dark:prose-invert'),
-		previewScroll: cn('h-[400px] border rounded-lg p-4'),
-		markdownScroll: cn('h-[400px] border rounded-lg'),
+		preview: cn('prose prose-sm dark:prose-invert max-w-none'),
+		previewScroll: cn('h-[400px] rounded-lg border p-4'),
+		markdownScroll: cn('h-[400px] rounded-lg border'),
 		editContent: cn('pt-6'),
 		editStack: cn('space-y-4'),
 		editTextarea: cn('min-h-[400px] font-mono text-sm'),
 		editActions: cn('flex gap-2'),
 		header: cn('flex items-center justify-between'),
 		headerActions: cn('flex gap-2'),
-		codeBlock: cn('p-4 text-sm font-mono whitespace-pre-wrap'),
+		codeBlock: cn('whitespace-pre-wrap p-4 font-mono text-sm'),
 	};
 
-	// 2. STATE
 	const [isEditing, setIsEditing] = useState(false);
 	const [editContent, setEditContent] = useState('');
 	const [copied, setCopied] = useState(false);
@@ -49,7 +65,6 @@ export const OutputSection = ({
 	const displayContent = currentTicket?.content || streamedContent;
 	const hasContent = Boolean(displayContent);
 
-	// 3. CALLBACKS
 	const handleCopy = useCallback(async () => {
 		if (!displayContent) return;
 		await navigator.clipboard.writeText(displayContent);
@@ -71,7 +86,6 @@ export const OutputSection = ({
 
 	if (!hasContent && !isGenerating) return null;
 
-	// 4. RENDERS
 	if (isEditing) {
 		return (
 			<Card>
@@ -84,7 +98,10 @@ export const OutputSection = ({
 						/>
 						<div className={classes.editActions}>
 							<Button onClick={handleSaveEdit}>Save Changes</Button>
-							<Button variant="outline" onClick={() => setIsEditing(false)}>
+							<Button
+								variant="outline"
+								onClick={() => setIsEditing(false)}
+							>
 								Cancel
 							</Button>
 						</div>
@@ -100,8 +117,13 @@ export const OutputSection = ({
 				<div className={classes.header}>
 					<CardTitle>Generated Ticket</CardTitle>
 					<div className={classes.headerActions}>
-						<Button variant="outline" size="sm" onClick={handleCopy} disabled={!hasContent}>
-							{copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={handleCopy}
+							disabled={!hasContent}
+						>
+							{copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
 							{copied ? 'Copied!' : 'Copy'}
 						</Button>
 						<Button
@@ -110,7 +132,7 @@ export const OutputSection = ({
 							onClick={handleEdit}
 							disabled={!hasContent || isEditing}
 						>
-							<Edit3 className="h-4 w-4 mr-2" />
+							<Edit3 className="mr-2 h-4 w-4" />
 							Edit
 						</Button>
 						<Button
@@ -119,7 +141,7 @@ export const OutputSection = ({
 							onClick={onRegenerate}
 							disabled={!currentTicket}
 						>
-							<RefreshCw className="h-4 w-4 mr-2" />
+							<RefreshCw className="mr-2 h-4 w-4" />
 							Regenerate
 						</Button>
 					</div>
@@ -147,4 +169,4 @@ export const OutputSection = ({
 			</CardContent>
 		</Card>
 	);
-}
+};

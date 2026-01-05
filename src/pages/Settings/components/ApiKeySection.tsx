@@ -1,32 +1,37 @@
-import { validateApiKey } from '@domain/openai';
+import { cn } from '@common';
+import { validateApiKey } from '@domain';
 import { Eye, EyeOff, Key, Save } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-
-import { cn } from '@common';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 interface ApiKeySectionProps {
+	/**
+	 * Current API key value.
+	 */
 	apiKey: string;
-	setApiKey: (key: string) => void;
+	/**
+	 * Whether the API is configured.
+	 */
 	isConfigured: boolean;
+	/**
+	 * Callback to set the API key.
+	 */
+	setApiKey: (key: string) => void;
 }
 
 export const ApiKeySection = ({ apiKey, setApiKey, isConfigured }: ApiKeySectionProps) => {
-	// 1. CLASSES OBJECT
 	const classes = {
-		successMessage: cn('flex items-center gap-2 text-sm text-green-600 dark:text-green-400'),
+		successMessage: cn('flex items-center gap-2 text-green-600 text-sm dark:text-green-400'),
 	};
 
-	// 2. STATE
 	const [showApiKey, setShowApiKey] = useState(false);
 	const [apiKeyInput, setApiKeyInput] = useState(apiKey);
 	const [isValidating, setIsValidating] = useState(false);
 
-	// 3. CALLBACKS
 	const handleSaveApiKey = useCallback(async () => {
 		if (!apiKeyInput.trim()) {
 			toast.error('Please enter an API key');
@@ -77,14 +82,17 @@ export const ApiKeySection = ({ apiKey, setApiKey, isConfigured }: ApiKeySection
 								type="button"
 								variant="ghost"
 								size="icon"
-								className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+								className="absolute top-0 right-0 h-full px-3 hover:bg-transparent"
 								onClick={() => setShowApiKey(!showApiKey)}
 							>
 								{showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
 							</Button>
 						</div>
-						<Button onClick={handleSaveApiKey} disabled={isValidating}>
-							<Save className="h-4 w-4 mr-2" />
+						<Button
+							onClick={handleSaveApiKey}
+							disabled={isValidating}
+						>
+							<Save className="mr-2 h-4 w-4" />
 							{isValidating ? 'Validating...' : 'Save'}
 						</Button>
 					</div>

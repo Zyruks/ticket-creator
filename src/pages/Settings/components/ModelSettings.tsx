@@ -1,14 +1,18 @@
-import { type OpenAIModel } from '@domain/openai';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import type { OpenAIModel } from '@domain';
 import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+	Input,
+	Label,
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui';
 
 const MODELS: { value: OpenAIModel; label: string; description: string }[] = [
 	{ value: 'gpt-5.2', label: 'GPT-5.2', description: 'Best for coding and agentic tasks' },
@@ -28,11 +32,29 @@ const MODELS: { value: OpenAIModel; label: string; description: string }[] = [
 ];
 
 interface ModelSettingsProps {
-	model: OpenAIModel;
-	setModel: (model: OpenAIModel) => void;
+	/**
+	 * Maximum tokens value.
+	 */
 	maxTokens: number;
-	setMaxTokens: (tokens: number) => void;
+	/**
+	 * Current OpenAI model.
+	 */
+	model: OpenAIModel;
+	/**
+	 * Temperature value.
+	 */
 	temperature: number;
+	/**
+	 * Callback to set max tokens.
+	 */
+	setMaxTokens: (tokens: number) => void;
+	/**
+	 * Callback to set the model.
+	 */
+	setModel: (model: OpenAIModel) => void;
+	/**
+	 * Callback to set temperature.
+	 */
 	setTemperature: (temp: number) => void;
 }
 
@@ -55,21 +77,28 @@ export const ModelSettings = ({
 			<CardContent className="space-y-6">
 				<div className="space-y-2">
 					<Label htmlFor="model">Model</Label>
-					<Select value={model} onValueChange={(v) => setModel(v as OpenAIModel)}>
-						<SelectTrigger id="model" className="w-full">
+					<Select
+						value={model}
+						onValueChange={(v) => setModel(v as OpenAIModel)}
+					>
+						<SelectTrigger
+							id="model"
+							className="w-full"
+						>
 							<SelectValue placeholder="Select a model" />
 						</SelectTrigger>
 						<SelectContent>
-							{MODELS.map((m) => (
-								<SelectItem key={m.value} value={m.value}>
-									{m.label}
+							{MODELS.map((modelOption) => (
+								<SelectItem
+									key={modelOption.value}
+									value={modelOption.value}
+								>
+									{modelOption.label}
 								</SelectItem>
 							))}
 						</SelectContent>
 					</Select>
-					{selectedModel && (
-						<p className="text-xs text-muted-foreground">{selectedModel.description}</p>
-					)}
+					{selectedModel && <p className="text-muted-foreground text-xs">{selectedModel.description}</p>}
 				</div>
 
 				<div className="space-y-2">
@@ -82,7 +111,7 @@ export const ModelSettings = ({
 						min={100}
 						max={16000}
 					/>
-					<p className="text-xs text-muted-foreground">
+					<p className="text-muted-foreground text-xs">
 						Maximum number of tokens in the response (100-16000)
 					</p>
 				</div>
@@ -93,15 +122,13 @@ export const ModelSettings = ({
 						id="temperature"
 						type="range"
 						value={temperature}
-						onChange={(e) => setTemperature(Number(e.target.value))}
+						onChange={(event) => setTemperature(Number(event.target.value))}
 						min={0}
 						max={1}
 						step={0.1}
 						className="cursor-pointer"
 					/>
-					<p className="text-xs text-muted-foreground">
-						Lower = more focused, Higher = more creative
-					</p>
+					<p className="text-muted-foreground text-xs">Lower = more focused, Higher = more creative</p>
 				</div>
 			</CardContent>
 		</Card>

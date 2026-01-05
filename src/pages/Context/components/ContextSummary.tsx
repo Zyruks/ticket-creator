@@ -1,20 +1,25 @@
-import { type RepositoryContext } from '@domain/repository';
-import { Trash2 } from 'lucide-react';
 import { cn } from '@common';
+import type { RepositoryContext } from '@domain';
+import { Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ContextSummaryProps {
+	/**
+	 * Repository context data.
+	 */
 	context: RepositoryContext | null;
+	/**
+	 * Callback to clear the context.
+	 */
 	onClear: () => void;
 }
 
 export const ContextSummary = ({ context, onClear }: ContextSummaryProps) => {
-	// 1. CLASSES OBJECT
 	const classes = {
-		summaryGrid: cn('grid grid-cols-2 md:grid-cols-4 gap-4'),
-		summaryItem: cn('text-center p-4 bg-muted rounded-lg'),
+		summaryGrid: cn('grid grid-cols-2 gap-4 md:grid-cols-4'),
+		summaryItem: cn('rounded-lg bg-muted p-4 text-center'),
 	};
 
 	if (!context) return null;
@@ -29,8 +34,11 @@ export const ContextSummary = ({ context, onClear }: ContextSummaryProps) => {
 							Indexed on {new Date(context.meta.generatedAt).toLocaleString()}
 						</CardDescription>
 					</div>
-					<Button variant="outline" onClick={onClear}>
-						<Trash2 className="h-4 w-4 mr-2" />
+					<Button
+						variant="outline"
+						onClick={onClear}
+					>
+						<Trash2 className="mr-2 h-4 w-4" />
 						Clear
 					</Button>
 				</div>
@@ -38,33 +46,34 @@ export const ContextSummary = ({ context, onClear }: ContextSummaryProps) => {
 			<CardContent>
 				<div className={classes.summaryGrid}>
 					<div className={classes.summaryItem}>
-						<div className="text-2xl font-bold">{context.summary.totalFiles}</div>
-						<div className="text-sm text-muted-foreground">Files</div>
+						<div className="font-bold text-2xl">{context.summary.totalFiles}</div>
+						<div className="text-muted-foreground text-sm">Files</div>
 					</div>
 					<div className={classes.summaryItem}>
-						<div className="text-2xl font-bold">{context.summary.totalDirectories}</div>
-						<div className="text-sm text-muted-foreground">Directories</div>
+						<div className="font-bold text-2xl">{context.summary.totalDirectories}</div>
+						<div className="text-muted-foreground text-sm">Directories</div>
 					</div>
 					<div className={classes.summaryItem}>
-						<div className="text-2xl font-bold">{context.summary.importantPaths.length}</div>
-						<div className="text-sm text-muted-foreground">Key Files</div>
+						<div className="font-bold text-2xl">{context.summary.importantPaths.length}</div>
+						<div className="text-muted-foreground text-sm">Key Files</div>
 					</div>
 					<div className={classes.summaryItem}>
-						<div className="text-2xl font-bold">
-							{Object.keys(context.summary.filesByExtension).length}
-						</div>
-						<div className="text-sm text-muted-foreground">File Types</div>
+						<div className="font-bold text-2xl">{Object.keys(context.summary.filesByExtension).length}</div>
+						<div className="text-muted-foreground text-sm">File Types</div>
 					</div>
 				</div>
 
 				<div className="mt-4">
-					<h4 className="font-medium mb-2">File Types</h4>
+					<h4 className="mb-2 font-medium">File Types</h4>
 					<div className="flex flex-wrap gap-2">
 						{Object.entries(context.summary.filesByExtension)
 							.sort((a, b) => b[1] - a[1])
 							.slice(0, 10)
 							.map(([ext, count]) => (
-								<Badge key={ext} variant="secondary">
+								<Badge
+									key={ext}
+									variant="secondary"
+								>
 									{ext}: {count}
 								</Badge>
 							))}

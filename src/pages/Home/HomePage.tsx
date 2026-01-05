@@ -4,17 +4,15 @@ import {
 	buildSystemPrompt,
 	buildUserPrompt,
 	createImageAttachment,
+	createTicket,
 	type ImageAttachment,
 	streamChatCompletion,
-} from '@domain/openai';
-import {
-	createTicket,
 	useRepositoryStore,
 	useSettingsStore,
+	useTemplateStore,
 	useTicketStore,
 	useTrainingStore,
-} from '@domain/stores';
-import { DEFAULT_TICKET_TEMPLATE } from '@domain/ticket';
+} from '@domain';
 import {
 	AlertCircle,
 	Check,
@@ -39,45 +37,47 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { TemplateSelector } from './components';
 
 export function HomePage() {
-	// 1. CLASSES OBJECT
+	// CLASSES OBJECT
 	const classes = {
-		container: cn('container mx-auto max-w-4xl py-8 px-4'),
-		header: cn('flex items-center gap-3 mb-8'),
+		container: cn('container mx-auto max-w-4xl px-4 py-8'),
+		header: cn('mb-8 flex items-center gap-3'),
 		headerIcon: cn('h-8 w-8 text-primary'),
-		headerTitle: cn('text-3xl font-bold'),
+		headerTitle: cn('font-bold text-3xl'),
 		headerDesc: cn('text-muted-foreground'),
-		badges: cn('flex flex-wrap gap-2 mb-6'),
+		badges: cn('mb-6 flex flex-wrap gap-2'),
 		alerts: cn('mb-6'),
 		cards: cn('mb-6'),
 		dragZone: (active: boolean) =>
 			cn(
-				'relative rounded-md group transition-all',
-				active && 'ring-2 ring-primary ring-offset-2 bg-primary/5'
+				'group relative rounded-md transition-all',
+				active && 'bg-primary/5 ring-2 ring-primary ring-offset-2',
 			),
 		dragOverlay: cn(
-			'absolute inset-0 flex items-center justify-center pointer-events-none',
-			'bg-background/50 backdrop-blur-sm rounded-md border-2 border-dashed border-primary'
+			'pointer-events-none absolute inset-0 flex items-center justify-center',
+			'rounded-md border-2 border-primary border-dashed bg-background/50 backdrop-blur-sm',
 		),
-		dragContent: cn('flex flex-col items-center animate-bounce'),
+		dragContent: cn('flex animate-bounce flex-col items-center'),
 		textInput: cn('min-h-[100px] resize-none pr-8'),
 		imageGrid: cn('flex flex-wrap gap-2'),
-		imageItem: cn('relative group rounded-lg overflow-hidden border bg-muted'),
+		imageItem: cn('group relative overflow-hidden rounded-lg border bg-muted'),
 		imagePreview: cn('h-20 w-20 object-cover'),
 		imageRemove: cn(
-			'absolute top-1 right-1 p-1 rounded-full',
-			'bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity'
+			'absolute top-1 right-1 rounded-full p-1',
+			'bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100',
 		),
-		imageLabel: cn('absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 truncate'),
+		imageLabel: cn('absolute right-0 bottom-0 left-0 truncate bg-black/60 p-1 text-white text-xs'),
 		actions: cn('flex items-center justify-between gap-2'),
-		preview: cn('prose prose-sm max-w-none dark:prose-invert'),
+		preview: cn('prose prose-sm dark:prose-invert max-w-none'),
 	};
 
-	// 2. HOOKS
+	// HOOKS
 	const { config, isConfigured } = useSettingsStore();
 	const { examples } = useTrainingStore();
 	const { context } = useRepositoryStore();
+	const { selectedTemplate } = useTemplateStore();
 	const {
 		currentTicket,
 		isGenerating,
@@ -102,7 +102,7 @@ export function HomePage() {
 	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	// 3. DERIVED STATE
+	// DERIVED STATE
 	const displayContent = currentTicket?.content || streamedContent;
 	const hasContent = Boolean(displayContent);
 	const ticketExampleLabel = `${examples.length} Training Example${examples.length !== 1 ? 's' : ''}`;
@@ -112,7 +112,7 @@ export function HomePage() {
 	const trainingVariant = examples.length > 0 ? 'default' : 'secondary';
 	const contextVariant = context ? 'default' : 'secondary';
 
-	// 4. CALLBACKS
+	// CALLBACKS
 	const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
 		if (!files || files.length === 0) return;
@@ -173,7 +173,7 @@ export function HomePage() {
 
 			await handleImageUpload(dummyEvent);
 		},
-		[handleImageUpload]
+		[handleImageUpload],
 	);
 
 	const removeImage = useCallback((id: string) => {
@@ -201,11 +201,7 @@ export function HomePage() {
 		clearCurrentTicket();
 
 		try {
-			const systemPrompt = buildSystemPrompt(
-				DEFAULT_TICKET_TEMPLATE,
-				context?.compactTree || null,
-				examples
-			);
+			const systemPrompt = buildSystemPrompt(selectedTemplate, context?.compactTree || null, examples);
 			const userPrompt = buildUserPrompt(request);
 			const userContent = buildMessageContent(userPrompt, images);
 
@@ -241,6 +237,7 @@ export function HomePage() {
 		config,
 		context,
 		examples,
+		selectedTemplate,
 		setIsGenerating,
 		setError,
 		setStreamedContent,
@@ -258,7 +255,7 @@ export function HomePage() {
 				handleGenerate();
 			}
 		},
-		[handleGenerate]
+		[handleGenerate],
 	);
 
 	const handleCopy = useCallback(async () => {
@@ -291,7 +288,7 @@ export function HomePage() {
 		clearCurrentTicket();
 	}, [currentTicket, clearCurrentTicket]);
 
-	// 5. RENDER HELPERS
+	// RENDER HELPERS
 	const renderStatusBadges = () => (
 		<div className={classes.badges}>
 			<Badge variant={apiStatusVariant}>{apiStatusLabel}</Badge>
@@ -303,7 +300,10 @@ export function HomePage() {
 	const renderAlerts = () => {
 		if (isConfigured) return null;
 		return (
-			<Alert variant="destructive" className={classes.alerts}>
+			<Alert
+				variant="destructive"
+				className={classes.alerts}
+			>
 				<AlertCircle className="h-4 w-4" />
 				<AlertTitle>API Key Required</AlertTitle>
 				<AlertDescription>
@@ -316,7 +316,10 @@ export function HomePage() {
 	const renderError = () => {
 		if (!error) return null;
 		return (
-			<Alert variant="destructive" className={classes.alerts}>
+			<Alert
+				variant="destructive"
+				className={classes.alerts}
+			>
 				<AlertCircle className="h-4 w-4" />
 				<AlertTitle>Generation Failed</AlertTitle>
 				<AlertDescription>{error}</AlertDescription>
@@ -329,16 +332,27 @@ export function HomePage() {
 		return (
 			<div className="space-y-2">
 				<div className="flex items-center justify-between">
-					<span className="text-sm font-medium">Attached Images ({images.length})</span>
-					<Button variant="ghost" size="sm" onClick={clearImages}>
-						<X className="h-3 w-3 mr-1" />
+					<span className="font-medium text-sm">Attached Images ({images.length})</span>
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={clearImages}
+					>
+						<X className="mr-1 h-3 w-3" />
 						Clear all
 					</Button>
 				</div>
 				<div className={classes.imageGrid}>
 					{images.map((img) => (
-						<div key={img.id} className={classes.imageItem}>
-							<img src={img.dataUrl} alt={img.name} className={classes.imagePreview} />
+						<div
+							key={img.id}
+							className={classes.imageItem}
+						>
+							<img
+								src={img.dataUrl}
+								alt={img.name}
+								className={classes.imagePreview}
+							/>
 							<button
 								type="button"
 								onClick={() => removeImage(img.id)}
@@ -359,8 +373,8 @@ export function HomePage() {
 		return (
 			<div className={classes.dragOverlay}>
 				<div className={classes.dragContent}>
-					<ImagePlus className="h-8 w-8 text-primary mb-2" />
-					<p className="text-sm font-medium text-primary">Drop images here</p>
+					<ImagePlus className="mb-2 h-8 w-8 text-primary" />
+					<p className="font-medium text-primary text-sm">Drop images here</p>
 				</div>
 			</div>
 		);
@@ -385,26 +399,29 @@ export function HomePage() {
 					disabled={isGenerating || isLoadingImage}
 				>
 					{isLoadingImage ? (
-						<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 					) : (
-						<ImagePlus className="h-4 w-4 mr-2" />
+						<ImagePlus className="mr-2 h-4 w-4" />
 					)}
 					Add Image
 				</Button>
-				<p className="text-xs text-muted-foreground hidden sm:block">
-					Press <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⌘</kbd> +{' '}
-					<kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> to generate
+				<p className="hidden text-muted-foreground text-xs sm:block">
+					Press <kbd className="rounded bg-muted px-1 py-0.5 text-xs">⌘</kbd> +{' '}
+					<kbd className="rounded bg-muted px-1 py-0.5 text-xs">Enter</kbd> to generate
 				</p>
 			</div>
-			<Button onClick={handleGenerate} disabled={isGenerating || !request.trim()}>
+			<Button
+				onClick={handleGenerate}
+				disabled={isGenerating || !request.trim()}
+			>
 				{isGenerating ? (
 					<>
-						<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 						Generating...
 					</>
 				) : (
 					<>
-						<Send className="h-4 w-4 mr-2" />
+						<Send className="mr-2 h-4 w-4" />
 						Generate Ticket
 					</>
 				)}
@@ -419,12 +436,11 @@ export function HomePage() {
 					<Sparkles className="h-5 w-5" />
 					What do you need?
 				</CardTitle>
-				<CardDescription>
-					Describe the task, feature, or bug fix you need a ticket for
-				</CardDescription>
+				<CardDescription>Describe the task, feature, or bug fix you need a ticket for</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<div className="space-y-4">
+					<TemplateSelector disabled={isGenerating} />
 					{/* biome-ignore lint/a11y/noStaticElementInteractions: drag zone */}
 					<div
 						className={classes.dragZone(isDragging)}
@@ -464,7 +480,10 @@ export function HomePage() {
 							/>
 							<div className="flex gap-2">
 								<Button onClick={handleSaveEdit}>Save Changes</Button>
-								<Button variant="outline" onClick={() => setIsEditing(false)}>
+								<Button
+									variant="outline"
+									onClick={() => setIsEditing(false)}
+								>
 									Cancel
 								</Button>
 							</div>
@@ -480,8 +499,13 @@ export function HomePage() {
 					<div className="flex items-center justify-between">
 						<CardTitle>Generated Ticket</CardTitle>
 						<div className="flex gap-2">
-							<Button variant="outline" size="sm" onClick={handleCopy} disabled={!hasContent}>
-								{copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleCopy}
+								disabled={!hasContent}
+							>
+								{copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
 								{copied ? 'Copied!' : 'Copy'}
 							</Button>
 							<Button
@@ -490,7 +514,7 @@ export function HomePage() {
 								onClick={handleEdit}
 								disabled={!hasContent || isEditing}
 							>
-								<Edit3 className="h-4 w-4 mr-2" />
+								<Edit3 className="mr-2 h-4 w-4" />
 								Edit
 							</Button>
 							<Button
@@ -499,7 +523,7 @@ export function HomePage() {
 								onClick={handleRegenerate}
 								disabled={!currentTicket}
 							>
-								<RefreshCw className="h-4 w-4 mr-2" />
+								<RefreshCw className="mr-2 h-4 w-4" />
 								Regenerate
 							</Button>
 						</div>
@@ -512,15 +536,15 @@ export function HomePage() {
 							<TabsTrigger value="markdown">Markdown</TabsTrigger>
 						</TabsList>
 						<TabsContent value="preview">
-							<ScrollArea className="h-[400px] border rounded-lg p-4">
+							<ScrollArea className="h-[400px] rounded-lg border p-4">
 								<div className={classes.preview}>
 									<ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
 								</div>
 							</ScrollArea>
 						</TabsContent>
 						<TabsContent value="markdown">
-							<ScrollArea className="h-[400px] border rounded-lg">
-								<pre className="p-4 text-sm font-mono whitespace-pre-wrap">{displayContent}</pre>
+							<ScrollArea className="h-[400px] rounded-lg border">
+								<pre className="whitespace-pre-wrap p-4 font-mono text-sm">{displayContent}</pre>
 							</ScrollArea>
 						</TabsContent>
 					</Tabs>
@@ -535,9 +559,7 @@ export function HomePage() {
 				<Ticket className={classes.headerIcon} />
 				<div>
 					<h1 className={classes.headerTitle}>Create Ticket</h1>
-					<p className={classes.headerDesc}>
-						Describe what you need and let AI generate a structured ticket
-					</p>
+					<p className={classes.headerDesc}>Describe what you need and let AI generate a structured ticket</p>
 				</div>
 			</div>
 

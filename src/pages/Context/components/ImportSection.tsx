@@ -1,28 +1,26 @@
 import { FileJson, Upload } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-
-import { cn } from '@common';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 
 interface ImportSectionProps {
+	/**
+	 * Whether repository context is already loaded.
+	 */
 	isLoaded: boolean;
+
+	/**
+	 * Callback to import JSON data.
+	 */
 	onImport: (json: string) => boolean;
 }
 
 export const ImportSection = ({ isLoaded, onImport }: ImportSectionProps) => {
-	// 1. CLASSES OBJECT
-	const classes = {
-		importCardContent: cn('space-y-4'),
-	};
-
-	// 2. STATE
 	const [jsonInput, setJsonInput] = useState('');
 
-	// 3. CALLBACKS
 	const handleImportFromTextarea = useCallback(() => {
 		if (!jsonInput.trim()) {
 			toast.error('Please paste the repository context JSON');
@@ -44,8 +42,8 @@ export const ImportSection = ({ isLoaded, onImport }: ImportSectionProps) => {
 			if (!file) return;
 
 			const reader = new FileReader();
-			reader.onload = (e) => {
-				const content = e.target?.result as string;
+			reader.onload = (event) => {
+				const content = event.target?.result as string;
 				const success = onImport(content);
 				if (success) {
 					toast.success('Repository context imported successfully');
@@ -56,19 +54,19 @@ export const ImportSection = ({ isLoaded, onImport }: ImportSectionProps) => {
 			reader.readAsText(file);
 			event.target.value = '';
 		},
-		[onImport]
+		[onImport],
 	);
 
 	if (isLoaded) return null;
 
-	// 4. RENDERS
+	// RENDER HELPERS
 	const renderInstructions = () => (
 		<Alert className="mb-6">
 			<FileJson className="h-4 w-4" />
 			<AlertTitle>How to generate context</AlertTitle>
 			<AlertDescription>
 				Run the indexer script on your target repository:
-				<pre className="mt-2 p-2 bg-muted rounded text-xs">
+				<pre className="mt-2 rounded bg-muted p-2 text-xs">
 					node scripts/index-repo.mjs /path/to/your/repo ./repo-context.json
 				</pre>
 				Then import the generated JSON file here.
@@ -86,7 +84,7 @@ export const ImportSection = ({ isLoaded, onImport }: ImportSectionProps) => {
 						Paste the JSON output from the index-repo script or upload the file
 					</CardDescription>
 				</CardHeader>
-				<CardContent className={classes.importCardContent}>
+				<CardContent className="space-y-4">
 					<Textarea
 						value={jsonInput}
 						onChange={(e) => setJsonInput(e.target.value)}
@@ -95,14 +93,20 @@ export const ImportSection = ({ isLoaded, onImport }: ImportSectionProps) => {
 					/>
 
 					<div className="flex gap-2">
-						<Button onClick={handleImportFromTextarea} disabled={!jsonInput.trim()}>
+						<Button
+							onClick={handleImportFromTextarea}
+							disabled={!jsonInput.trim()}
+						>
 							Import from Text
 						</Button>
 
 						<label>
-							<Button variant="outline" asChild>
+							<Button
+								variant="outline"
+								asChild
+							>
 								<span>
-									<Upload className="h-4 w-4 mr-2" />
+									<Upload className="mr-2 h-4 w-4" />
 									Upload JSON File
 									<input
 										type="file"

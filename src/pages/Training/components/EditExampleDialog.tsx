@@ -1,9 +1,8 @@
+import { cn } from '@common';
+import type { TrainingExample } from '@domain';
 import { Save, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-
-import { cn } from '@common';
-import { type TrainingExample } from '@domain/training';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -17,23 +16,32 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
 interface EditExampleDialogProps {
+	/**
+	 * The training example to edit, or null if not editing.
+	 */
 	example: TrainingExample | null;
+	/**
+	 * Callback when dialog is closed.
+	 */
 	onClose: () => void;
+	/**
+	 * Callback to update an existing training example.
+	 */
 	onUpdate: (id: string, data: { input: string; output: string }) => void;
 }
 
 export const EditExampleDialog = ({ example, onClose, onUpdate }: EditExampleDialogProps) => {
-	// 1. CLASSES OBJECT
+	// CLASSES OBJECT
 	const classes = {
-		dialogContent: cn('max-w-2xl max-h-[90vh] overflow-y-auto bg-white'),
+		dialogContent: cn('max-h-[90vh] max-w-2xl overflow-y-auto bg-white'),
 		textareaOutput: cn('min-h-[200px] font-mono text-sm'),
 	};
 
-	// 2. STATE
+	// STATE
 	const [inputValue, setInputValue] = useState('');
 	const [outputValue, setOutputValue] = useState('');
 
-	// 3. EFFECTS
+	// EFFECTS
 	useEffect(() => {
 		if (example) {
 			setInputValue(example.input);
@@ -41,7 +49,7 @@ export const EditExampleDialog = ({ example, onClose, onUpdate }: EditExampleDia
 		}
 	}, [example]);
 
-	// 4. CALLBACKS
+	// CALLBACKS
 	const handleSave = useCallback(() => {
 		if (!example) return;
 
@@ -59,7 +67,10 @@ export const EditExampleDialog = ({ example, onClose, onUpdate }: EditExampleDia
 	}, [example, inputValue, outputValue, onUpdate, onClose]);
 
 	return (
-		<Dialog open={!!example} onOpenChange={(open) => !open && onClose()}>
+		<Dialog
+			open={!!example}
+			onOpenChange={(open) => !open && onClose()}
+		>
 			<DialogContent className={classes.dialogContent}>
 				<DialogHeader>
 					<DialogTitle>Edit Training Example</DialogTitle>
@@ -86,12 +97,15 @@ export const EditExampleDialog = ({ example, onClose, onUpdate }: EditExampleDia
 					</div>
 				</div>
 				<DialogFooter>
-					<Button variant="outline" onClick={onClose}>
-						<X className="h-4 w-4 mr-2" />
+					<Button
+						variant="outline"
+						onClick={onClose}
+					>
+						<X className="mr-2 h-4 w-4" />
 						Cancel
 					</Button>
 					<Button onClick={handleSave}>
-						<Save className="h-4 w-4 mr-2" />
+						<Save className="mr-2 h-4 w-4" />
 						Save Changes
 					</Button>
 				</DialogFooter>
