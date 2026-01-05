@@ -1,19 +1,13 @@
+import { generateId, getTimestamp } from '@common';
 import type { GeneratedTicket } from '../types';
-
-/**
- * Generate a unique ticket ID
- */
-function generateId(): string {
-	return `ticket-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
 
 /**
  * Generate a new ticket and add it to history
  */
 export function createTicket(request: string, content: string): GeneratedTicket {
-	const now = new Date().toISOString();
+	const now = getTimestamp();
 	return {
-		id: generateId(),
+		id: generateId('ticket'),
 		request,
 		content,
 		createdAt: now,

@@ -1,3 +1,4 @@
+import { generateId, getTimestamp } from '@common';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { TrainingExample } from '../types';
@@ -13,13 +14,6 @@ interface TrainingState {
 	updateExample: (id: string, updates: Partial<Pick<TrainingExample, 'input' | 'output'>>) => void;
 }
 
-/**
- * Generate a unique training example ID
- */
-function generateId(): string {
-	return `example-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
 export const useTrainingStore = create<TrainingState>()(
 	persist(
 		(set) => ({
@@ -30,11 +24,11 @@ export const useTrainingStore = create<TrainingState>()(
 					examples: [
 						...state.examples,
 						{
-							id: generateId(),
+							id: generateId('example'),
 							input,
 							output,
-							createdAt: new Date().toISOString(),
-							updatedAt: new Date().toISOString(),
+							createdAt: getTimestamp(),
+							updatedAt: getTimestamp(),
 						},
 					],
 				})),
@@ -52,9 +46,9 @@ export const useTrainingStore = create<TrainingState>()(
 						...state.examples,
 						...examples.map((example) => ({
 							...example,
-							id: example.id || generateId(),
-							createdAt: example.createdAt || new Date().toISOString(),
-							updatedAt: new Date().toISOString(),
+							id: example.id || generateId('example'),
+							createdAt: example.createdAt || getTimestamp(),
+							updatedAt: getTimestamp(),
 						})),
 					],
 				})),
@@ -66,7 +60,7 @@ export const useTrainingStore = create<TrainingState>()(
 							? {
 									...example,
 									...updates,
-									updatedAt: new Date().toISOString(),
+									updatedAt: getTimestamp(),
 								}
 							: example,
 					),

@@ -1,3 +1,4 @@
+import { getTimestamp } from '@common';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { GeneratedTicket } from '../types';
@@ -74,7 +75,7 @@ export const useTicketStore = create<TicketState>()(
 						? {
 								...state.currentTicket,
 								content,
-								updatedAt: new Date().toISOString(),
+								updatedAt: getTimestamp(),
 							}
 						: null,
 				})),

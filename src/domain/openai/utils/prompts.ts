@@ -1,3 +1,4 @@
+import { generateId } from '@common';
 import type { TicketTemplate } from '../../ticket';
 import type { TrainingExample } from '../../training';
 import type { ImageAttachment, ImageContent, MessageContent, TextContent } from '../types';
@@ -131,7 +132,7 @@ export function readFileAsDataUrl(file: File): Promise<string> {
 export async function createImageAttachment(file: File): Promise<ImageAttachment> {
 	const dataUrl = await readFileAsDataUrl(file);
 	return {
-		id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+		id: generateId('image'),
 		file,
 		dataUrl,
 		name: file.name,
