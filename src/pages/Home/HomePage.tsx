@@ -291,7 +291,6 @@ export function HomePage() {
 		clearCurrentTicket();
 	}, [currentTicket, clearCurrentTicket]);
 
-
 	const renderStatusBadges = () => (
 		<div className="mb-6 flex flex-wrap gap-2">
 			<Badge variant={apiStatusVariant}>{apiStatusLabel}</Badge>
