@@ -1,0 +1,17 @@
+/**
+ * Ticket Constants - Barrel Export
+ */
+
+export { TEMPLATE_CATEGORIES } from './categories';
+export {
+	BUG_TEMPLATE,
+	CHORE_TEMPLATE,
+	DEFAULT_TICKET_TEMPLATE,
+	DOCS_TEMPLATE,
+	FEATURE_TEMPLATE,
+	PERF_TEMPLATE,
+	REFACTOR_TEMPLATE,
+	STYLE_TEMPLATE,
+	TEST_TEMPLATE,
+	TICKET_TEMPLATES,
+} from './templates';
