@@ -1,7 +1,18 @@
+import { Toaster } from '@components';
+import { RootLayout } from '@layout';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Toaster } from '@/components/ui/sonner';
-import { RootLayout } from '@/Layout';
-import { ContextPage, HomePage, SettingsPage, TrainingPage } from '@/pages';
+
+const HomePage = lazy(() => import('@/pages/Home/HomePage'));
+const TrainingPage = lazy(() => import('@/pages/Training/TrainingPage'));
+const ContextPage = lazy(() => import('@/pages/Context/ContextPage'));
+const SettingsPage = lazy(() => import('@/pages/Settings/SettingsPage'));
+
+const PageLoader = () => (
+	<div className="flex h-screen items-center justify-center">
+		<div className="text-muted-foreground">Loading...</div>
+	</div>
+);
 
 export default function App() {
 	return (
@@ -10,19 +21,35 @@ export default function App() {
 				<Route element={<RootLayout />}>
 					<Route
 						path="/"
-						element={<HomePage />}
+						element={
+							<Suspense fallback={<PageLoader />}>
+								<HomePage />
+							</Suspense>
+						}
 					/>
 					<Route
 						path="/training"
-						element={<TrainingPage />}
+						element={
+							<Suspense fallback={<PageLoader />}>
+								<TrainingPage />
+							</Suspense>
+						}
 					/>
 					<Route
 						path="/context"
-						element={<ContextPage />}
+						element={
+							<Suspense fallback={<PageLoader />}>
+								<ContextPage />
+							</Suspense>
+						}
 					/>
 					<Route
 						path="/settings"
-						element={<SettingsPage />}
+						element={
+							<Suspense fallback={<PageLoader />}>
+								<SettingsPage />
+							</Suspense>
+						}
 					/>
 				</Route>
 			</Routes>
