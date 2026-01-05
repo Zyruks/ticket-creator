@@ -1,19 +1,15 @@
-/**
- * Repository Store - Manages repository context for ticket generation
- */
-
-import type { RepositoryContext } from '@domain/repository';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { RepositoryContext } from '../types';
 
 interface RepositoryState {
 	context: RepositoryContext | null;
 	isLoaded: boolean;
 
 	// Actions
-	setContext: (context: RepositoryContext) => void;
 	clearContext: () => void;
 	importFromJson: (jsonString: string) => boolean;
+	setContext: (context: RepositoryContext) => void;
 }
 
 export const useRepositoryStore = create<RepositoryState>()(
@@ -21,12 +17,6 @@ export const useRepositoryStore = create<RepositoryState>()(
 		(set) => ({
 			context: null,
 			isLoaded: false,
-
-			setContext: (context) =>
-				set({
-					context,
-					isLoaded: true,
-				}),
 
 			clearContext: () =>
 				set({
@@ -55,9 +45,15 @@ export const useRepositoryStore = create<RepositoryState>()(
 					return false;
 				}
 			},
+
+			setContext: (context) =>
+				set({
+					context,
+					isLoaded: true,
+				}),
 		}),
 		{
 			name: 'ticket-creator-repository',
-		}
-	)
+		},
+	),
 );
