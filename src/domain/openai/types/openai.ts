@@ -22,9 +22,10 @@ export interface OpenAIConfig {
 	model: OpenAIModel;
 
 	/**
-	 * Maximum number of tokens to generate
+	 * Maximum number of tokens that can be generated for completion
+	 * @see https://platform.openai.com/docs/api-reference/chat/create#chat-create-max_completion_tokens
 	 */
-	maxTokens: number;
+	maxCompletionTokens: number;
 
 	/**
 	 * Sampling temperature (0-2). Higher = more random

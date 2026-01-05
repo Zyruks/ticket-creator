@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { supportsTemperature } from '../utils/model';
 import type { ChatMessage, OpenAIConfig, OpenAIResponse, TextContent } from '../types';
 
 type ChatCompletionMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
@@ -77,12 +78,18 @@ export async function sendChatCompletion(
 ): Promise<OpenAIResponse> {
 	const client = createOpenAIClient(config.apiKey);
 
-	const response = await client.chat.completions.create({
+	const params: OpenAI.Chat.ChatCompletionCreateParams = {
 		model: config.model,
 		messages: messages.map(toOpenAIMessage),
-		max_tokens: config.maxTokens,
-		temperature: config.temperature,
-	});
+		max_completion_tokens: config.maxCompletionTokens,
+	};
+
+	// Only include temperature for models that support it
+	if (supportsTemperature(config.model)) {
+		params.temperature = config.temperature;
+	}
+
+	const response = await client.chat.completions.create(params);
 
 	const choice = response.choices[0];
 
@@ -107,13 +114,19 @@ export async function* streamChatCompletion(
 ): AsyncGenerator<string, void, unknown> {
 	const client = createOpenAIClient(config.apiKey);
 
-	const stream = await client.chat.completions.create({
+	const params: OpenAI.Chat.ChatCompletionCreateParamsStreaming = {
 		model: config.model,
 		messages: messages.map(toOpenAIMessage),
-		max_tokens: config.maxTokens,
-		temperature: config.temperature,
+		max_completion_tokens: config.maxCompletionTokens,
 		stream: true,
-	});
+	};
+
+	// Only include temperature for models that support it
+	if (supportsTemperature(config.model)) {
+		params.temperature = config.temperature;
+	}
+
+	const stream = await client.chat.completions.create(params);
 
 	for await (const chunk of stream) {
 		const content = chunk.choices[0]?.delta?.content;

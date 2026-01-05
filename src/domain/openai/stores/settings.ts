@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { DEFAULT_OPENAI_CONFIG } from '../constants';
 import type { OpenAIConfig, OpenAIModel } from '../types';
+import { getDefaultTemperature, supportsTemperature } from '../utils';
 
 interface SettingsState {
 	config: OpenAIConfig;
@@ -10,7 +11,7 @@ interface SettingsState {
 	// Actions
 	setApiKey: (apiKey: string) => void;
 	setModel: (model: OpenAIModel) => void;
-	setMaxTokens: (maxTokens: number) => void;
+	setMaxCompletionTokens: (maxCompletionTokens: number) => void;
 	setTemperature: (temperature: number) => void;
 	resetConfig: () => void;
 }
@@ -28,13 +29,18 @@ export const useSettingsStore = create<SettingsState>()(
 				})),
 
 			setModel: (model) =>
-				set((state) => ({
-					config: { ...state.config, model },
-				})),
+				set((state) => {
+					const newConfig = { ...state.config, model };
+					// Auto-adjust temperature for reasoning models
+					if (!supportsTemperature(model)) {
+						newConfig.temperature = getDefaultTemperature(model);
+					}
+					return { config: newConfig };
+				}),
 
-			setMaxTokens: (maxTokens) =>
+			setMaxCompletionTokens: (maxCompletionTokens) =>
 				set((state) => ({
-					config: { ...state.config, maxTokens },
+					config: { ...state.config, maxCompletionTokens },
 				})),
 
 			setTemperature: (temperature) =>
