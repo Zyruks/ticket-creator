@@ -1,8 +1,8 @@
 import { cn } from '@common';
+import { Button } from '@components';
 import { BookOpen, FolderTree, Menu, Settings, Ticket, X } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 
 const navItems = [
 	{ to: '/', icon: Ticket, label: 'Create' },
