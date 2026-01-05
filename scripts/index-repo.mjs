@@ -4,14 +4,14 @@
  * Repository Indexer Script
  *
  * Generates a JSON file containing the folder structure of a repository,
- * respecting .gitignore patterns. Run this on your target repo (e.g., your-repo)
+ * respecting .gitignore patterns. Run this on your target repo
  * and import the generated JSON into the Ticket Creator app.
  *
  * Usage:
  *   node scripts/index-repo.mjs /path/to/repository [output-file.json]
  *
  * Example:
- *   node scripts/index-repo.mjs ~/Github/your-repo ./repo-context.json
+ *   node scripts/index-repo.mjs ~/path/to/your-repo ./repo-context.json
  */
 
 import { execSync } from 'node:child_process';
@@ -256,7 +256,7 @@ function main() {
 		console.log('Usage:');
 		console.log('  node scripts/index-repo.mjs <repository-path> [output-file]');
 		console.log('\nExample:');
-		console.log('  node scripts/index-repo.mjs ~/Github/your-repo ./repo-context.json');
+		console.log('  node scripts/index-repo.mjs ~/path/to/your-repo ./repo-context.json');
 		console.log('\nThe output JSON can be imported into the Ticket Creator app.');
 		process.exit(0);
 	}
