@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import { supportsTemperature } from '../utils/model';
 import type { ChatMessage, OpenAIConfig, OpenAIResponse, TextContent } from '../types';
+import { supportsTemperature } from '../utils/model';
 
 type ChatCompletionMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 

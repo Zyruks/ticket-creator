@@ -1,5 +1,5 @@
 import { cn } from '@common';
-import { BookOpen, FolderTree, Settings, Ticket } from 'lucide-react';
+import { BookOpen, FolderTree, Github, Heart, Settings, Ticket } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 const navItems = [
@@ -34,7 +34,7 @@ export function Sidebar() {
 		));
 
 	const renderFooter = () => (
-		<div className="absolute right-3 bottom-4 left-3">
+		<div className="absolute right-3 bottom-4 left-3 space-y-3">
 			<div className="rounded-lg bg-muted p-3 text-muted-foreground text-xs">
 				<p className="mb-1 font-medium">Quick Tips</p>
 				<ul className="space-y-1">
@@ -43,17 +43,39 @@ export function Sidebar() {
 					<li>• Use ⌘+Enter to generate quickly</li>
 				</ul>
 			</div>
+			<div className="flex flex-col items-center gap-1 text-muted-foreground text-xs">
+				<p className="flex items-center gap-1">
+					Made with <Heart className="h-3 w-3 fill-red-500 text-red-500" /> by{' '}
+					<a
+						href="https://x.com/zyruks"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="font-medium text-foreground hover:underline"
+					>
+						@zyruks
+					</a>
+				</p>
+				<a
+					href="https://github.com/zyruks/ticket-creator"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="flex items-center gap-1 text-foreground hover:underline"
+				>
+					<Github className="h-3 w-3" />
+					<span className="font-medium">Open Source</span>
+				</a>
+			</div>
 		</div>
 	);
 
 	return (
 		<aside className={classes.container}>
 			<div className="p-6">
-				<h1 className="flex items-center gap-2 font-bold text-xl">
+				<h1 className="flex items-center gap-2 font-bold text-foreground text-xl">
 					<Ticket className="h-6 w-6 text-primary" />
 					Ticket Creator
 				</h1>
-				<p className="mt-1 text-muted-foreground text-xs">AI-Powered ClickUp Tickets</p>
+				<p className="mt-1 text-muted-foreground text-xs">AI-Powered Tickets Generation</p>
 			</div>
 
 			<nav className="px-3">

@@ -12,7 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@components';
-import { supportsTemperature, type OpenAIModel } from '@domain';
+import { type OpenAIModel, supportsTemperature } from '@domain';
 
 const MODELS: { value: OpenAIModel; label: string; description: string }[] = [
 	{ value: 'gpt-5.2', label: 'GPT-5.2', description: 'Best for coding and agentic tasks' },
