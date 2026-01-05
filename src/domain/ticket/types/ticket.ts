@@ -1,6 +1,5 @@
 export type TemplateCategory = 'feat' | 'fix' | 'refactor' | 'docs' | 'chore' | 'style' | 'test' | 'perf';
 
-
 export interface TemplateCategoryInfo {
 	/**
 	 * Brief description of when to use this category
@@ -54,7 +53,6 @@ export interface TicketTemplate {
 	 */
 	name: string;
 }
-
 
 export interface TicketExample {
 	/**

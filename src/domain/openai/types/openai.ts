@@ -115,21 +115,21 @@ export interface ImageAttachment {
 }
 
 type OpenAIResponseUsage = {
-		/**
-		 * Number of tokens in the prompt
-		 */
-		promptTokens: number;
+	/**
+	 * Number of tokens in the prompt
+	 */
+	promptTokens: number;
 
-		/**
-		 * Number of tokens in the completion
-		 */
-		completionTokens: number;
+	/**
+	 * Number of tokens in the completion
+	 */
+	completionTokens: number;
 
-		/**
-		 * Total tokens used (prompt + completion)
-		 */
-		totalTokens: number;
-}
+	/**
+	 * Total tokens used (prompt + completion)
+	 */
+	totalTokens: number;
+};
 
 export interface OpenAIResponse {
 	/**
@@ -140,5 +140,5 @@ export interface OpenAIResponse {
 	/**
 	 * Token usage statistics
 	 */
-	usage?: OpenAIResponseUsage
+	usage?: OpenAIResponseUsage;
 }

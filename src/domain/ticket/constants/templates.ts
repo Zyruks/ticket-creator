@@ -1,5 +1,3 @@
-
-
 import type { TicketTemplate } from '../types';
 import choreTemplate from './templates/chore.md?raw';
 import docsTemplate from './templates/docs.md?raw';
@@ -321,6 +319,5 @@ export const TICKET_TEMPLATES: TicketTemplate[] = [
 	TEST_TEMPLATE,
 	PERF_TEMPLATE,
 ];
-
 
 export const DEFAULT_TICKET_TEMPLATE = FEATURE_TEMPLATE;
