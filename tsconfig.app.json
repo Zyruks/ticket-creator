@@ -21,6 +21,7 @@
 		"paths": {
 			"@/*": ["src/*"],
 			"@common": ["src/common"],
+			"@layout": ["src/layout"],
 			"@domain": ["src/domain"],
 			"@pages": ["src/pages"],
 			"@components": ["src/components"]
