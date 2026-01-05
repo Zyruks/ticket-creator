@@ -17,29 +17,26 @@ export function MobileNav() {
 	const classes = {
 		container: cn('md:hidden'),
 		header: cn(
-			'fixed top-0 left-0 right-0 h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50'
+			'fixed top-0 right-0 left-0 z-50 h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60',
 		),
 		overlay: {
-			button: cn(
-				'fixed inset-0 bg-background/80 backdrop-blur-sm z-40 w-full h-full cursor-default'
-			),
-			container: cn('fixed top-14 left-0 right-0 z-50'),
+			button: cn('fixed inset-0 z-40 h-full w-full cursor-default bg-background/80 backdrop-blur-sm'),
+			container: cn('fixed top-14 right-0 left-0 z-50'),
 		},
 		menuItem: (isActive: boolean) =>
 			cn(
-				'flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors',
+				'flex items-center gap-3 rounded-lg px-4 py-3 font-medium text-base transition-colors',
 				isActive
 					? 'bg-primary text-primary-foreground'
-					: 'text-muted-foreground hover:bg-muted hover:text-foreground'
+					: 'text-muted-foreground hover:bg-muted hover:text-foreground',
 			),
 		bottomNav: cn(
-			'fixed bottom-0 left-0 right-0 h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50'
+			'fixed right-0 bottom-0 left-0 z-50 h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60',
 		),
 		bottomItem: (isActive: boolean) =>
-			cn(
-				'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors',
-				isActive ? 'text-primary' : 'text-muted-foreground'
-			),
+			cn('flex flex-col items-center gap-1 rounded-lg px-3 py-2 transition-colors', 'text-muted-foreground', {
+				'text-primary': isActive,
+			}),
 	};
 
 	const renderMenuOverlay = () => {
@@ -54,7 +51,7 @@ export function MobileNav() {
 					aria-label="Close menu"
 				/>
 				<div className={classes.overlay.container}>
-					<nav className="bg-background border-b p-4">
+					<nav className="border-b bg-background p-4">
 						<ul className="space-y-2">
 							{navItems.map((item) => (
 								<li key={item.to}>
@@ -77,10 +74,13 @@ export function MobileNav() {
 
 	const renderBottomNav = () => (
 		<nav className={classes.bottomNav}>
-			<ul className="flex items-center justify-around h-full">
+			<ul className="flex h-full items-center justify-around">
 				{navItems.map((item) => (
 					<li key={item.to}>
-						<NavLink to={item.to} className={({ isActive }) => classes.bottomItem(isActive)}>
+						<NavLink
+							to={item.to}
+							className={({ isActive }) => classes.bottomItem(isActive)}
+						>
 							<item.icon className="h-5 w-5" />
 							<span className="text-xs">{item.label}</span>
 						</NavLink>
@@ -93,12 +93,16 @@ export function MobileNav() {
 	return (
 		<div className={classes.container}>
 			<header className={classes.header}>
-				<div className="flex items-center justify-between h-full px-4">
-					<h1 className="font-bold flex items-center gap-2">
+				<div className="flex h-full items-center justify-between px-4">
+					<h1 className="flex items-center gap-2 font-bold">
 						<Ticket className="h-5 w-5 text-primary" />
 						Ticket Creator
 					</h1>
-					<Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)}>
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => setIsOpen(!isOpen)}
+					>
 						{isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
 					</Button>
 				</div>
