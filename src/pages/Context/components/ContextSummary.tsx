@@ -1,9 +1,7 @@
 import { cn } from '@common';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components';
 import type { RepositoryContext } from '@domain';
 import { Trash2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ContextSummaryProps {
 	/**

@@ -1,8 +1,8 @@
 import { cn } from '@common';
+import { Badge } from '@components';
 import type { RepositoryNode } from '@domain';
 import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 
 interface TreeNodeProps {
 	/**

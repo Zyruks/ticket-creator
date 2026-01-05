@@ -1,4 +1,3 @@
-import type { OpenAIModel } from '@domain';
 import {
 	Card,
 	CardContent,
@@ -12,7 +11,8 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui';
+} from '@components';
+import type { OpenAIModel } from '@domain';
 
 const MODELS: { value: OpenAIModel; label: string; description: string }[] = [
 	{ value: 'gpt-5.2', label: 'GPT-5.2', description: 'Best for coding and agentic tasks' },

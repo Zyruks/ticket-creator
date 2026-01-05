@@ -1,26 +1,30 @@
+import { Button } from '@components';
 import type { TrainingExample } from '@domain';
 import { Download, Plus, Trash2, Upload } from 'lucide-react';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 
 interface TrainingActionsProps {
 	/**
 	 * Array of training examples.
 	 */
 	examples: TrainingExample[];
+
 	/**
 	 * Callback when add example button is clicked.
 	 */
 	onAddOpen: () => void;
+
 	/**
 	 * Callback to clear all training examples.
 	 */
 	onClear: () => void;
+
 	/**
 	 * Callback to export training examples.
 	 */
 	onExport: () => void;
+
 	/**
 	 * Callback to import training examples.
 	 */
@@ -42,9 +46,9 @@ export const TrainingActions = ({
 			if (!file) return;
 
 			const reader = new FileReader();
-			reader.onload = (e) => {
+			reader.onload = (event) => {
 				try {
-					const data = JSON.parse(e.target?.result as string) as TrainingExample[];
+					const data = JSON.parse(event.target?.result as string) as TrainingExample[];
 					if (Array.isArray(data)) {
 						onImport(data);
 						toast.success(`Imported ${data.length} training examples`);

@@ -1,5 +1,23 @@
 import { cn } from '@common';
 import {
+	Alert,
+	AlertDescription,
+	AlertTitle,
+	Badge,
+	Button,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+	ScrollArea,
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+	Textarea,
+} from '@components';
+import {
 	buildMessageContent,
 	buildSystemPrompt,
 	buildUserPrompt,
@@ -30,26 +48,11 @@ import { type KeyboardEvent, useCallback, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import { TemplateSelector } from './components';
 
 export function HomePage() {
-	// CLASSES OBJECT
 	const classes = {
 		container: cn('container mx-auto max-w-4xl px-4 py-8'),
-		header: cn('mb-8 flex items-center gap-3'),
-		headerIcon: cn('h-8 w-8 text-primary'),
-		headerTitle: cn('font-bold text-3xl'),
-		headerDesc: cn('text-muted-foreground'),
-		badges: cn('mb-6 flex flex-wrap gap-2'),
-		alerts: cn('mb-6'),
-		cards: cn('mb-6'),
 		dragZone: (active: boolean) =>
 			cn(
 				'group relative rounded-md transition-all',
@@ -59,18 +62,11 @@ export function HomePage() {
 			'pointer-events-none absolute inset-0 flex items-center justify-center',
 			'rounded-md border-2 border-primary border-dashed bg-background/50 backdrop-blur-sm',
 		),
-		dragContent: cn('flex animate-bounce flex-col items-center'),
-		textInput: cn('min-h-[100px] resize-none pr-8'),
-		imageGrid: cn('flex flex-wrap gap-2'),
 		imageItem: cn('group relative overflow-hidden rounded-lg border bg-muted'),
-		imagePreview: cn('h-20 w-20 object-cover'),
 		imageRemove: cn(
 			'absolute top-1 right-1 rounded-full p-1',
 			'bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100',
 		),
-		imageLabel: cn('absolute right-0 bottom-0 left-0 truncate bg-black/60 p-1 text-white text-xs'),
-		actions: cn('flex items-center justify-between gap-2'),
-		preview: cn('prose prose-sm dark:prose-invert max-w-none'),
 	};
 
 	// HOOKS
@@ -102,7 +98,6 @@ export function HomePage() {
 	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	// DERIVED STATE
 	const displayContent = currentTicket?.content || streamedContent;
 	const hasContent = Boolean(displayContent);
 	const ticketExampleLabel = `${examples.length} Training Example${examples.length !== 1 ? 's' : ''}`;
@@ -112,59 +107,67 @@ export function HomePage() {
 	const trainingVariant = examples.length > 0 ? 'default' : 'secondary';
 	const contextVariant = context ? 'default' : 'secondary';
 
-	// CALLBACKS
-	const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const files = event.target.files;
-		if (!files || files.length === 0) return;
-
-		setIsLoadingImage(true);
-		try {
-			const newImages: ImageAttachment[] = [];
-			for (const file of Array.from(files)) {
-				if (!file.type.startsWith('image/')) {
-					toast.error(`${file.name} is not an image`);
-					continue;
-				}
-				if (file.size > 20 * 1024 * 1024) {
-					toast.error(`${file.name} is too large (max 20MB)`);
-					continue;
-				}
-				const attachment = await createImageAttachment(file);
-				newImages.push(attachment);
-			}
-			setImages((prev) => [...prev, ...newImages]);
-			if (newImages.length > 0) {
-				toast.success(`Added ${newImages.length} image${newImages.length > 1 ? 's' : ''}`);
-			}
-		} catch {
-			toast.error('Failed to load images');
-		} finally {
-			setIsLoadingImage(false);
-			if (fileInputRef.current) {
-				fileInputRef.current.value = '';
-			}
+	const validateImageFile = useCallback((file: File): boolean => {
+		if (!file.type.startsWith('image/')) {
+			toast.error(`${file.name} is not an image`);
+			return false;
 		}
+		if (file.size > 20 * 1024 * 1024) {
+			toast.error(`${file.name} is too large (max 20MB)`);
+			return false;
+		}
+		return true;
 	}, []);
 
-	const handleDragOver = useCallback((e: React.DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleImageUpload = useCallback(
+		async (event: React.ChangeEvent<HTMLInputElement>) => {
+			const files = event.target.files;
+			if (!files || files.length === 0) return;
+
+			setIsLoadingImage(true);
+			try {
+				const newImages: ImageAttachment[] = [];
+				for (const file of Array.from(files)) {
+					if (!validateImageFile(file)) continue;
+
+					const attachment = await createImageAttachment(file);
+					newImages.push(attachment);
+				}
+				setImages((prev) => [...prev, ...newImages]);
+				if (newImages.length > 0) {
+					toast.success(`Added ${newImages.length} image${newImages.length > 1 ? 's' : ''}`);
+				}
+			} catch {
+				toast.error('Failed to load images');
+			} finally {
+				setIsLoadingImage(false);
+				if (fileInputRef.current) {
+					fileInputRef.current.value = '';
+				}
+			}
+		},
+		[validateImageFile],
+	);
+
+	const handleDragOver = useCallback((event: React.DragEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
 		setIsDragging(true);
 	}, []);
 
-	const handleDragLeave = useCallback((e: React.DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleDragLeave = useCallback((event: React.DragEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
 		setIsDragging(false);
 	}, []);
 
 	const handleDrop = useCallback(
-		async (e: React.DragEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+		async (event: React.DragEvent) => {
+			event.preventDefault();
+			event.stopPropagation();
 			setIsDragging(false);
 
-			const files = e.dataTransfer.files;
+			const files = event.dataTransfer.files;
 			if (!files || files.length === 0) return;
 
 			const dummyEvent = {
@@ -223,8 +226,8 @@ export function HomePage() {
 			setRequest('');
 			clearImages();
 			toast.success('Ticket generated successfully!');
-		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Failed to generate ticket';
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Failed to generate ticket';
 			setError(message);
 			toast.error(message);
 		} finally {
@@ -249,9 +252,9 @@ export function HomePage() {
 	]);
 
 	const handleKeyDown = useCallback(
-		(e: KeyboardEvent<HTMLTextAreaElement>) => {
-			if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-				e.preventDefault();
+		(event: KeyboardEvent<HTMLTextAreaElement>) => {
+			if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
 				handleGenerate();
 			}
 		},
@@ -288,9 +291,9 @@ export function HomePage() {
 		clearCurrentTicket();
 	}, [currentTicket, clearCurrentTicket]);
 
-	// RENDER HELPERS
+
 	const renderStatusBadges = () => (
-		<div className={classes.badges}>
+		<div className="mb-6 flex flex-wrap gap-2">
 			<Badge variant={apiStatusVariant}>{apiStatusLabel}</Badge>
 			<Badge variant={trainingVariant}>{ticketExampleLabel}</Badge>
 			<Badge variant={contextVariant}>{contextLabel}</Badge>
@@ -302,7 +305,7 @@ export function HomePage() {
 		return (
 			<Alert
 				variant="destructive"
-				className={classes.alerts}
+				className="mb-6"
 			>
 				<AlertCircle className="h-4 w-4" />
 				<AlertTitle>API Key Required</AlertTitle>
@@ -318,7 +321,7 @@ export function HomePage() {
 		return (
 			<Alert
 				variant="destructive"
-				className={classes.alerts}
+				className="mb-6"
 			>
 				<AlertCircle className="h-4 w-4" />
 				<AlertTitle>Generation Failed</AlertTitle>
@@ -342,7 +345,7 @@ export function HomePage() {
 						Clear all
 					</Button>
 				</div>
-				<div className={classes.imageGrid}>
+				<div className="flex flex-wrap gap-2">
 					{images.map((img) => (
 						<div
 							key={img.id}
@@ -351,7 +354,7 @@ export function HomePage() {
 							<img
 								src={img.dataUrl}
 								alt={img.name}
-								className={classes.imagePreview}
+								className="h-20 w-20 object-cover"
 							/>
 							<button
 								type="button"
@@ -360,7 +363,9 @@ export function HomePage() {
 							>
 								<X className="h-3 w-3" />
 							</button>
-							<div className={classes.imageLabel}>{img.name}</div>
+							<div className="absolute right-0 bottom-0 left-0 truncate bg-black/60 p-1 text-white text-xs">
+								{img.name}
+							</div>
 						</div>
 					))}
 				</div>
@@ -372,7 +377,7 @@ export function HomePage() {
 		if (!isDragging) return null;
 		return (
 			<div className={classes.dragOverlay}>
-				<div className={classes.dragContent}>
+				<div className="flex animate-bounce flex-col items-center">
 					<ImagePlus className="mb-2 h-8 w-8 text-primary" />
 					<p className="font-medium text-primary text-sm">Drop images here</p>
 				</div>
@@ -381,7 +386,7 @@ export function HomePage() {
 	};
 
 	const renderInputActions = () => (
-		<div className={classes.actions}>
+		<div className="flex items-center justify-between gap-2">
 			<div className="flex items-center gap-2">
 				<input
 					ref={fileInputRef}
@@ -430,7 +435,7 @@ export function HomePage() {
 	);
 
 	const renderInputSection = () => (
-		<Card className={classes.cards}>
+		<Card className="mb-6">
 			<CardHeader>
 				<CardTitle className="flex items-center gap-2">
 					<Sparkles className="h-5 w-5" />
@@ -453,7 +458,7 @@ export function HomePage() {
 							onChange={(e) => setRequest(e.target.value)}
 							onKeyDown={handleKeyDown}
 							placeholder="e.g., Update the color system to use the new Tailwind theme tokens..."
-							className={classes.textInput}
+							className="min-h-[100px] resize-none pr-8"
 							disabled={isGenerating}
 						/>
 						{renderDragOverlay()}
@@ -537,7 +542,7 @@ export function HomePage() {
 						</TabsList>
 						<TabsContent value="preview">
 							<ScrollArea className="h-[400px] rounded-lg border p-4">
-								<div className={classes.preview}>
+								<div className="prose prose-sm dark:prose-invert max-w-none">
 									<ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
 								</div>
 							</ScrollArea>
@@ -555,11 +560,13 @@ export function HomePage() {
 
 	return (
 		<div className={classes.container}>
-			<div className={classes.header}>
-				<Ticket className={classes.headerIcon} />
+			<div className="mb-8 flex items-center gap-3">
+				<Ticket className="h-8 w-8 text-primary" />
 				<div>
-					<h1 className={classes.headerTitle}>Create Ticket</h1>
-					<p className={classes.headerDesc}>Describe what you need and let AI generate a structured ticket</p>
+					<h1 className="font-bold text-3xl">Create Ticket</h1>
+					<p className="text-muted-foreground">
+						Describe what you need and let AI generate a structured ticket
+					</p>
 				</div>
 			</div>
 
@@ -571,3 +578,5 @@ export function HomePage() {
 		</div>
 	);
 }
+
+export default HomePage;

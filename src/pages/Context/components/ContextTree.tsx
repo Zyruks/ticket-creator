@@ -1,6 +1,5 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, ScrollArea } from '@components';
 import type { RepositoryNode } from '@domain';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { TreeNode } from './TreeNode';
 
 interface ContextTreeProps {

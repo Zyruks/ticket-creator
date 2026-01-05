@@ -1,14 +1,8 @@
-/**
- * Template Selector Component
- */
-
 import { cn } from '@common';
+import { Button, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components';
 import { TEMPLATE_CATEGORIES, useTemplateStore } from '@domain';
 import { Eye } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TemplatePreviewDialog } from './TemplatePreviewDialog';
 
 interface TemplateSelectorProps {

@@ -1,15 +1,19 @@
 import { cn } from '@common';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	ScrollArea,
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from '@components';
 import { TEMPLATE_CATEGORIES, type TicketTemplate } from '@domain';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface TemplatePreviewDialogProps {
-	/**
-	 * Callback when dialog open state changes
-	 */
-	onOpenChange: (open: boolean) => void;
-
 	/**
 	 * Whether the dialog is open
 	 */
@@ -19,6 +23,11 @@ interface TemplatePreviewDialogProps {
 	 * The template to preview
 	 */
 	template: TicketTemplate;
+
+	/**
+	 * Callback when dialog open state changes
+	 */
+	onOpenChange: (open: boolean) => void;
 }
 
 export function TemplatePreviewDialog({ onOpenChange, open, template }: TemplatePreviewDialogProps) {

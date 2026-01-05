@@ -1,5 +1,5 @@
+import { Badge } from '@components';
 import { useRepositoryStore, useSettingsStore, useTrainingStore } from '@domain';
-import { Badge } from '@/components/ui';
 
 export const StatusBadges = () => {
 	const { isConfigured } = useSettingsStore();

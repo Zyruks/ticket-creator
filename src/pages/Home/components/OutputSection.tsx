@@ -1,15 +1,23 @@
 import { cn } from '@common';
+import {
+	Button,
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+	ScrollArea,
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+	Textarea,
+} from '@components';
 import type { GeneratedTicket } from '@domain';
 import { Check, Copy, Edit3, RefreshCw } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 
 interface OutputSectionProps {
 	/**

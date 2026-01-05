@@ -1,18 +1,18 @@
 import { cn } from '@common';
-import { Save } from 'lucide-react';
-import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import {
+	Button,
 	Dialog,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+	Label,
+	Textarea,
+} from '@components';
+import { Save } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 interface AddExampleDialogProps {
 	/**
@@ -30,17 +30,14 @@ interface AddExampleDialogProps {
 }
 
 export const AddExampleDialog = ({ isOpen, onOpenChange, onAdd }: AddExampleDialogProps) => {
-	// CLASSES OBJECT
 	const classes = {
 		dialogContent: cn('max-h-[90vh] max-w-2xl overflow-y-auto bg-white'),
 		textareaOutput: cn('min-h-[200px] font-mono text-sm'),
 	};
 
-	// STATE
 	const [inputValue, setInputValue] = useState('');
 	const [outputValue, setOutputValue] = useState('');
 
-	// CALLBACKS
 	const handleSave = useCallback(() => {
 		if (!inputValue.trim() || !outputValue.trim()) {
 			toast.error('Both input and output are required');
@@ -70,7 +67,7 @@ export const AddExampleDialog = ({ isOpen, onOpenChange, onAdd }: AddExampleDial
 						<Textarea
 							id="input"
 							value={inputValue}
-							onChange={(e) => setInputValue(e.target.value)}
+							onChange={(event) => setInputValue(event.target.value)}
 							placeholder="e.g., Update the header color to match the new brand guidelines"
 							className="min-h-[80px]"
 						/>
@@ -80,7 +77,7 @@ export const AddExampleDialog = ({ isOpen, onOpenChange, onAdd }: AddExampleDial
 						<Textarea
 							id="output"
 							value={outputValue}
-							onChange={(e) => setOutputValue(e.target.value)}
+							onChange={(event) => setOutputValue(event.target.value)}
 							placeholder="## Objective / Problem Statement&#10;Update the header component to use the new brand color..."
 							className={classes.textareaOutput}
 						/>

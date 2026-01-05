@@ -1,12 +1,9 @@
 import { cn } from '@common';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@components';
 import { validateApiKey } from '@domain';
 import { Eye, EyeOff, Key, Save } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 interface ApiKeySectionProps {
 	/**

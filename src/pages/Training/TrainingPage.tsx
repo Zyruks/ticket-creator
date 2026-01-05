@@ -1,11 +1,9 @@
 import { cn } from '@common';
+import { Badge, Button, Card, CardContent } from '@components';
 import { type TrainingExample, useTrainingStore } from '@domain';
 import { BookOpen, FileJson, Plus } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import {
 	AddExampleDialog,
 	EditExampleDialog,
@@ -14,7 +12,6 @@ import {
 } from '@/pages/Training/components';
 
 export const TrainingPage = () => {
-	// CLASSES OBJECT
 	const classes = {
 		container: cn('container mx-auto max-w-4xl bg-white px-4 py-8'),
 		header: cn('mb-8 flex items-center justify-between'),
@@ -22,14 +19,12 @@ export const TrainingPage = () => {
 		emptyStateContent: cn('flex flex-col items-center justify-center py-12'),
 	};
 
-	// HOOKS
 	const { examples, addExample, updateExample, deleteExample, importExamples, clearExamples } =
 		useTrainingStore();
 
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 	const [editingExample, setEditingExample] = useState<TrainingExample | null>(null);
 
-	// DERIVED STATE
 	const hasExamples = examples.length > 0;
 	const exampleCountLabel = `${examples.length} example${examples.length !== 1 ? 's' : ''}`;
 
@@ -128,3 +123,5 @@ export const TrainingPage = () => {
 		</div>
 	);
 };
+
+export default TrainingPage;

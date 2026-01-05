@@ -51,3 +51,5 @@ export const ContextPage = () => {
 		</div>
 	);
 };
+
+export default ContextPage;

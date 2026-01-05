@@ -1,5 +1,5 @@
+import { Alert, AlertDescription, AlertTitle } from '@components';
 import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui';
 
 interface ErrorAlertProps {
 	/**

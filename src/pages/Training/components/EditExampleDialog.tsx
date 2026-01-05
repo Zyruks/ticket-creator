@@ -1,19 +1,19 @@
 import { cn } from '@common';
-import type { TrainingExample } from '@domain';
-import { Save, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import {
+	Button,
 	Dialog,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+	Label,
+	Textarea,
+} from '@components';
+import type { TrainingExample } from '@domain';
+import { Save, X } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface EditExampleDialogProps {
 	/**
@@ -31,17 +31,14 @@ interface EditExampleDialogProps {
 }
 
 export const EditExampleDialog = ({ example, onClose, onUpdate }: EditExampleDialogProps) => {
-	// CLASSES OBJECT
 	const classes = {
 		dialogContent: cn('max-h-[90vh] max-w-2xl overflow-y-auto bg-white'),
 		textareaOutput: cn('min-h-[200px] font-mono text-sm'),
 	};
 
-	// STATE
 	const [inputValue, setInputValue] = useState('');
 	const [outputValue, setOutputValue] = useState('');
 
-	// EFFECTS
 	useEffect(() => {
 		if (example) {
 			setInputValue(example.input);
@@ -49,7 +46,6 @@ export const EditExampleDialog = ({ example, onClose, onUpdate }: EditExampleDia
 		}
 	}, [example]);
 
-	// CALLBACKS
 	const handleSave = useCallback(() => {
 		if (!example) return;
 
@@ -82,7 +78,7 @@ export const EditExampleDialog = ({ example, onClose, onUpdate }: EditExampleDia
 						<Textarea
 							id="edit-input"
 							value={inputValue}
-							onChange={(e) => setInputValue(e.target.value)}
+							onChange={(event) => setInputValue(event.target.value)}
 							className="min-h-[80px]"
 						/>
 					</div>
