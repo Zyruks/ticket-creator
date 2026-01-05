@@ -1,0 +1,1 @@
+export { useTrainingStore } from './training';

@@ -1,18 +1,14 @@
-/**
- * Ticket Templates - Conventional Commit Based
- */
+
 
 import type { TicketTemplate } from '../types';
-
-// Import markdown templates
+import choreTemplate from './templates/chore.md?raw';
+import docsTemplate from './templates/docs.md?raw';
 import featTemplate from './templates/feat.md?raw';
 import fixTemplate from './templates/fix.md?raw';
+import perfTemplate from './templates/perf.md?raw';
 import refactorTemplate from './templates/refactor.md?raw';
-import docsTemplate from './templates/docs.md?raw';
-import choreTemplate from './templates/chore.md?raw';
 import styleTemplate from './templates/style.md?raw';
 import testTemplate from './templates/test.md?raw';
-import perfTemplate from './templates/perf.md?raw';
 
 /**
  * Feature Template - For new features and enhancements
@@ -315,9 +311,6 @@ Improve the rendering performance of the repository tree component when displayi
 	name: 'Performance',
 };
 
-/**
- * All available templates
- */
 export const TICKET_TEMPLATES: TicketTemplate[] = [
 	FEATURE_TEMPLATE,
 	BUG_TEMPLATE,
@@ -329,7 +322,5 @@ export const TICKET_TEMPLATES: TicketTemplate[] = [
 	PERF_TEMPLATE,
 ];
 
-/**
- * Default template (Feature)
- */
+
 export const DEFAULT_TICKET_TEMPLATE = FEATURE_TEMPLATE;

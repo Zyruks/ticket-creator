@@ -1,1 +1,2 @@
-export * from './training.types';
+export * from './stores';
+export * from './types';
