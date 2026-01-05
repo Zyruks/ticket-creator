@@ -13,7 +13,7 @@ import {
 
 export const TrainingPage = () => {
 	const classes = {
-		container: cn('container mx-auto max-w-4xl bg-white px-4 py-8'),
+		container: cn('container mx-auto max-w-4xl px-4 py-8'),
 		header: cn('mb-8 flex items-center justify-between'),
 		emptyStateCard: cn('border-dashed'),
 		emptyStateContent: cn('flex flex-col items-center justify-center py-12'),
@@ -76,7 +76,7 @@ export const TrainingPage = () => {
 				<div className="flex items-center gap-3">
 					<BookOpen className="h-8 w-8 text-primary" />
 					<div>
-						<h1 className="font-bold text-3xl">Training Examples</h1>
+						<h1 className="font-bold text-3xl text-foreground">Training Examples</h1>
 						<p className="text-muted-foreground">Add examples to teach the AI your ticket style</p>
 					</div>
 				</div>

@@ -12,7 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@components';
-import type { OpenAIModel } from '@domain';
+import { supportsTemperature, type OpenAIModel } from '@domain';
 
 const MODELS: { value: OpenAIModel; label: string; description: string }[] = [
 	{ value: 'gpt-5.2', label: 'GPT-5.2', description: 'Best for coding and agentic tasks' },
@@ -33,9 +33,9 @@ const MODELS: { value: OpenAIModel; label: string; description: string }[] = [
 
 interface ModelSettingsProps {
 	/**
-	 * Maximum tokens value.
+	 * Maximum completion tokens value.
 	 */
-	maxTokens: number;
+	maxCompletionTokens: number;
 	/**
 	 * Current OpenAI model.
 	 */
@@ -45,9 +45,9 @@ interface ModelSettingsProps {
 	 */
 	temperature: number;
 	/**
-	 * Callback to set max tokens.
+	 * Callback to set max completion tokens.
 	 */
-	setMaxTokens: (tokens: number) => void;
+	setMaxCompletionTokens: (tokens: number) => void;
 	/**
 	 * Callback to set the model.
 	 */
@@ -61,8 +61,8 @@ interface ModelSettingsProps {
 export const ModelSettings = ({
 	model,
 	setModel,
-	maxTokens,
-	setMaxTokens,
+	maxCompletionTokens,
+	setMaxCompletionTokens,
 	temperature,
 	setTemperature,
 }: ModelSettingsProps) => {
@@ -102,34 +102,34 @@ export const ModelSettings = ({
 				</div>
 
 				<div className="space-y-2">
-					<Label htmlFor="maxTokens">Max Tokens</Label>
+					<Label htmlFor="maxCompletionTokens">Max Completion Tokens</Label>
 					<Input
-						id="maxTokens"
+						id="maxCompletionTokens"
 						type="number"
-						value={maxTokens}
-						onChange={(e) => setMaxTokens(Number(e.target.value))}
+						value={maxCompletionTokens}
+						onChange={(event) => setMaxCompletionTokens(Number(event.target.value))}
 						min={100}
 						max={16000}
 					/>
-					<p className="text-muted-foreground text-xs">
-						Maximum number of tokens in the response (100-16000)
-					</p>
+					<p className="text-muted-foreground text-xs">Maximum tokens for completion output (100-16000)</p>
 				</div>
 
-				<div className="space-y-2">
-					<Label htmlFor="temperature">Temperature: {temperature}</Label>
-					<Input
-						id="temperature"
-						type="range"
-						value={temperature}
-						onChange={(event) => setTemperature(Number(event.target.value))}
-						min={0}
-						max={1}
-						step={0.1}
-						className="cursor-pointer"
-					/>
-					<p className="text-muted-foreground text-xs">Lower = more focused, Higher = more creative</p>
-				</div>
+				{supportsTemperature(model) && (
+					<div className="space-y-2">
+						<Label htmlFor="temperature">Temperature: {temperature}</Label>
+						<Input
+							id="temperature"
+							type="range"
+							value={temperature}
+							onChange={(event) => setTemperature(Number(event.target.value))}
+							min={0}
+							max={1}
+							step={0.1}
+							className="cursor-pointer"
+						/>
+						<p className="text-muted-foreground text-xs">Lower = more focused, Higher = more creative</p>
+					</div>
+				)}
 			</CardContent>
 		</Card>
 	);

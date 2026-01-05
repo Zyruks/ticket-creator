@@ -29,7 +29,7 @@ export const ContextPage = () => {
 			<div className={classes.header}>
 				<FolderTree className="h-8 w-8 text-primary" />
 				<div>
-					<h1 className="font-bold text-3xl">Repository Context</h1>
+					<h1 className="font-bold text-3xl text-foreground">Repository Context</h1>
 					<p className="text-muted-foreground">Import your repository structure for context-aware tickets</p>
 				</div>
 			</div>

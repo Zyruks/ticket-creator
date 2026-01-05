@@ -562,7 +562,7 @@ export function HomePage() {
 			<div className="mb-8 flex items-center gap-3">
 				<Ticket className="h-8 w-8 text-primary" />
 				<div>
-					<h1 className="font-bold text-3xl">Create Ticket</h1>
+					<h1 className="font-bold text-3xl text-foreground">Create Ticket</h1>
 					<p className="text-muted-foreground">
 						Describe what you need and let AI generate a structured ticket
 					</p>

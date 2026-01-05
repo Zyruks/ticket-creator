@@ -1,7 +1,7 @@
 import { cn } from '@common';
-import { useSettingsStore } from '@domain';
+import { getDefaultTemperature, supportsTemperature, useSettingsStore } from '@domain';
 import { Settings2 } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { ApiKeySection, DangerZone, ModelSettings } from '@/pages/Settings/components';
 
@@ -11,7 +11,7 @@ export const SettingsPage = () => {
 		header: cn('mb-8 flex items-center gap-3'),
 	};
 
-	const { config, setApiKey, setModel, setMaxTokens, setTemperature, resetConfig, isConfigured } =
+	const { config, setApiKey, setModel, setMaxCompletionTokens, setTemperature, resetConfig, isConfigured } =
 		useSettingsStore();
 
 	const handleReset = useCallback(() => {
@@ -19,12 +19,23 @@ export const SettingsPage = () => {
 		toast.info('Settings reset to defaults');
 	}, [resetConfig]);
 
+	// Auto-adjust temperature when switching to/from reasoning models
+	useEffect(() => {
+		if (!supportsTemperature(config.model)) {
+			const defaultTemp = getDefaultTemperature(config.model);
+			if (config.temperature !== defaultTemp) {
+				setTemperature(defaultTemp);
+				toast.info(`Temperature set to ${defaultTemp} for ${config.model}`);
+			}
+		}
+	}, [config.model, config.temperature, setTemperature]);
+
 	return (
 		<div className={classes.container}>
 			<div className={classes.header}>
 				<Settings2 className="h-8 w-8 text-primary" />
 				<div>
-					<h1 className="font-bold text-3xl">Settings</h1>
+					<h1 className="font-bold text-3xl text-foreground">Settings</h1>
 					<p className="text-muted-foreground">Configure your OpenAI integration</p>
 				</div>
 			</div>
@@ -38,8 +49,8 @@ export const SettingsPage = () => {
 				<ModelSettings
 					model={config.model}
 					setModel={setModel}
-					maxTokens={config.maxTokens}
-					setMaxTokens={setMaxTokens}
+					maxCompletionTokens={config.maxCompletionTokens}
+					setMaxCompletionTokens={setMaxCompletionTokens}
 					temperature={config.temperature}
 					setTemperature={setTemperature}
 				/>
