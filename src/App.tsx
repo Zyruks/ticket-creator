@@ -8,10 +8,22 @@ export default function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route element={<RootLayout />}>
-					<Route path="/" element={<HomePage />} />
-					<Route path="/training" element={<TrainingPage />} />
-					<Route path="/context" element={<ContextPage />} />
-					<Route path="/settings" element={<SettingsPage />} />
+					<Route
+						path="/"
+						element={<HomePage />}
+					/>
+					<Route
+						path="/training"
+						element={<TrainingPage />}
+					/>
+					<Route
+						path="/context"
+						element={<ContextPage />}
+					/>
+					<Route
+						path="/settings"
+						element={<SettingsPage />}
+					/>
 				</Route>
 			</Routes>
 			<Toaster position="bottom-right" />
