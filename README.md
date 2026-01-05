@@ -1,8 +1,10 @@
 # Ticket Creator
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 AI-powered ticket generator for development teams. Transform natural language descriptions into well-structured, context-aware tickets using OpenAI's latest models.
 
-![App Screenshot](screenshot.png)
+![App Screenshot](./public/assets/images/readme-header.png)
 
 ## 🚀 Quick Start
 
@@ -15,7 +17,7 @@ AI-powered ticket generator for development teams. Transform natural language de
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/Zyruks/ticket-creator
 cd ticket-creator
 
 # Install dependencies
@@ -36,14 +38,9 @@ The app will open at `http://localhost:5173`.
    - **Context**: Import repository structure for better results.
    - **Templates**: Custom styles and few-shot learning examples.
 
-## 📝 Contributing
-
-1. Follow the code style in `.github/instructions/`.
-2. Run `pnpm lint:fix` before committing.
-3. Test with `pnpm build`.
-
 ## 📄 License
-MIT
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 - [shadcn/ui](https://ui.shadcn.com/)
